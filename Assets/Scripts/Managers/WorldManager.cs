@@ -5,18 +5,15 @@ namespace Managers
 {
     public class WorldManager : MonoBehaviour
     {
-        [Header("Component References")]
         [SerializeField] private WorldMover worldMover;
         [SerializeField] private ChunkSpawner chunkSpawner;
         [SerializeField] private ChunkPool chunkPool;
-        
-        [Header("Player Reference")]
-        [SerializeField] private Transform playerTransform;
-        [SerializeField] private float playerZOffset = 0f;
-        
-        [Header("Debug")]
-        [SerializeField] private bool showDebugInfo = true;
-        
+
+
+        private readonly Lane _leftLane = new Lane(LaneNumber.Left, -5f, -1.67f);
+        private readonly Lane _centerLane = new Lane(LaneNumber.Left, -1.66f, 1.66f);
+        private readonly Lane _rightLane = new Lane(LaneNumber.Left, 1.67f, 5f);
+
         private void Awake()
         {
             if (worldMover == null)
@@ -27,42 +24,11 @@ namespace Managers
             
             if (chunkPool == null)
                 chunkPool = GetComponent<ChunkPool>();
-            
-            if (worldMover == null)
-                Debug.LogError("WorldManager: WorldMover component not found!");
-            
-            if (chunkSpawner == null)
-                Debug.LogError("WorldManager: ChunkSpawner component not found!");
-            
-            if (chunkPool == null)
-                Debug.LogError("WorldManager: ChunkPool component not found!");
-        }
-        
-        private void Start()
-        {
-            if (playerTransform != null)
-            {
-                UpdatePlayerPosition();
-            }
         }
         
         private void Update()
-        {
-            if (playerTransform != null)
-            {
-                UpdatePlayerPosition();
-            }
-            
+        {   
             MoveWorld();
-        }
-        
-        private void UpdatePlayerPosition()
-        {
-            float playerZ = playerTransform.position.z + playerZOffset;
-            if (chunkSpawner != null)
-            {
-                chunkSpawner.PlayerZPosition = playerZ;
-            }
         }
         
         private void MoveWorld()
@@ -138,7 +104,7 @@ namespace Managers
         
         private void OnGUI()
         {
-            if (!showDebugInfo) return;
+            if (GameManager.Instance.DebugMode) return;
             
             GUILayout.BeginArea(new Rect(10, 10, 300, 200));
             GUILayout.Box("World Manager Debug");
@@ -157,6 +123,17 @@ namespace Managers
             }
             
             GUILayout.EndArea();
+        }
+
+        public float GetLaneXPosition(LaneNumber lane)
+        {
+            return lane switch
+            {
+                LaneNumber.Left => _leftLane.Center,
+                LaneNumber.Center => _centerLane.Center,
+                LaneNumber.Right => _rightLane.Center,
+                _ => _centerLane.Center
+            };
         }
     }
 }

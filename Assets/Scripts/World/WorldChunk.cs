@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Managers;
 
 namespace World
 {
@@ -9,12 +10,9 @@ namespace World
         [SerializeField] private float chunkLength = 20f;
         [SerializeField] private Transform chunkStartPoint;
         [SerializeField] private Transform chunkEndPoint;
+        [SerializeField] private Level chunkLevel;
         
-        
-        private readonly Lane _leftLane = new Lane(LaneNumber.Left, -7.5f, -2.5f);
-        private readonly Lane _centerLane = new Lane(LaneNumber.Left, -2.5f, 2.5f);
-        private readonly Lane _rightLane = new Lane(LaneNumber.Left, 2.5f, 7.5f);
-        
+
         private readonly List<IWorldObject> _worldObjects = new List<IWorldObject>();
         private float _currentZPosition;
         private bool _isActive = false;
@@ -57,29 +55,6 @@ namespace World
             
             _currentZPosition -= deltaMovement;
             transform.position = new Vector3(transform.position.x, transform.position.y, _currentZPosition);
-            
-            for (int i = _worldObjects.Count - 1; i >= 0; i--)
-            {
-                if (_worldObjects[i] != null)
-                {
-                    _worldObjects[i].MoveWithWorld(deltaMovement);
-                }
-                else
-                {
-                    _worldObjects.RemoveAt(i);
-                }
-            }
-        }
-        
-        public float GetLaneXPosition(LaneNumber lane)
-        {
-            return lane switch
-            {
-                LaneNumber.Left => _leftLane.Center,
-                LaneNumber.Center => _centerLane.Center,
-                LaneNumber.Right => _rightLane.Center,
-                _ => _centerLane.Center
-            };
         }
         
         public void AddWorldObject(IWorldObject worldObject)
@@ -103,14 +78,19 @@ namespace World
         public void ResetChunk()
         {
             _isActive = false;
-            
-            foreach (var worldObject in _worldObjects)
+
+            // Make a copy because calling OnDespawn may remove the object from the original list,
+            // which would modify the collection during enumeration and throw InvalidOperationException.
+            var objectsCopy = _worldObjects.ToArray();
+
+            foreach (var worldObject in objectsCopy)
             {
                 if (worldObject != null)
                 {
                     worldObject.OnDespawn();
                 }
             }
+
             _worldObjects.Clear();
             
             gameObject.SetActive(false);
@@ -130,9 +110,10 @@ namespace World
                 Vector3 start = transform.position;
                 Vector3 end = transform.position + new Vector3(0, 0, chunkLength);
                 
-                Gizmos.DrawLine(start + new Vector3(_leftLane.Center, 0, 0), end + new Vector3(_leftLane.Center, 0, 0));
-                Gizmos.DrawLine(start + new Vector3(_centerLane.Center, 0, 0), end + new Vector3(_centerLane.Center, 0, 0));
-                Gizmos.DrawLine(start + new Vector3(_rightLane.Center, 0, 0), end + new Vector3(_rightLane.Center, 0, 0));
+                WorldManager worldManager = GameManager.Instance.WorldManager;
+                Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0));
+                Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0));
+                Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0));
             }
         }
     }

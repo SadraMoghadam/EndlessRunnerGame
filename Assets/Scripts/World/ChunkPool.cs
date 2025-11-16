@@ -6,40 +6,43 @@ namespace World
     public class ChunkPool : MonoBehaviour
     {
         [Header("Pool Settings")]
+        [Tooltip("Assign a single WorldChunk prefab. The pool will instantiate chunks from this prefab.")]
         [SerializeField] private WorldChunk chunkPrefab;
-        [SerializeField] private int initialPoolSize = 10;
+        [Tooltip("Initial number of instances to create.")]
+        [SerializeField] private int initialPoolSize = 5;
         [SerializeField] private int maxPoolSize = 50;
-        
-        private Queue<WorldChunk> availableChunks = new Queue<WorldChunk>();
+
+        private Queue<WorldChunk> available = new Queue<WorldChunk>();
         private List<WorldChunk> allChunks = new List<WorldChunk>();
-        
+
         private void Awake()
         {
             if (chunkPrefab == null)
             {
-                Debug.LogError("ChunkPool: Chunk prefab is not assigned!");
+                Debug.LogError("ChunkPool: No chunk prefab assigned! Please assign a WorldChunk prefab.");
                 return;
             }
-            
+
             for (int i = 0; i < initialPoolSize; i++)
             {
                 CreateNewChunk();
             }
         }
-        
+
         public WorldChunk GetChunk()
         {
-            WorldChunk chunk;
-            
-            if (availableChunks.Count > 0)
+            WorldChunk chunk = null;
+            if (available.Count > 0)
             {
-                chunk = availableChunks.Dequeue();
+                chunk = available.Dequeue();
+                if (chunk != null) chunk.gameObject.SetActive(true);
             }
             else
             {
                 if (allChunks.Count < maxPoolSize)
                 {
                     chunk = CreateNewChunk();
+                    if (chunk != null) chunk.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -47,31 +50,34 @@ namespace World
                     return null;
                 }
             }
-            
+
             return chunk;
         }
-        
+
         public void ReturnChunk(WorldChunk chunk)
         {
             if (chunk == null) return;
-            
+
             chunk.ResetChunk();
-            availableChunks.Enqueue(chunk);
+            chunk.gameObject.SetActive(false);
+            available.Enqueue(chunk);
         }
-        
+
         private WorldChunk CreateNewChunk()
         {
+            if (chunkPrefab == null) return null;
+
             WorldChunk chunk = Instantiate(chunkPrefab, transform);
             chunk.gameObject.SetActive(false);
-            chunk.name = $"WorldChunk_{allChunks.Count}";
+            chunk.name = $"{chunkPrefab.name}_Instance_{allChunks.Count}";
             allChunks.Add(chunk);
-            availableChunks.Enqueue(chunk);
+            available.Enqueue(chunk);
             return chunk;
         }
-        
+
         public int GetActiveChunkCount()
         {
-            return allChunks.Count - availableChunks.Count;
+            return allChunks.Count - available.Count;
         }
     }
 }

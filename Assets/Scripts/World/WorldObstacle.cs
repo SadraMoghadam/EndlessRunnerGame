@@ -30,7 +30,12 @@ namespace World
                 transform.position.z - deltaMovement
             );
         }
-        
+
+        public void OnCollided()
+        {
+            // Handle collision logic here (e.g., damage player, play sound, etc.)
+        }
+
         public void OnDespawn()
         {
             isActive = false;

@@ -61,7 +61,7 @@ namespace World
             }
         }
         
-        public void OnCollected()
+        public void OnCollided()
         {
             if (_isCollected) return;
             
@@ -76,7 +76,7 @@ namespace World
             
             if (other.CompareTag("Player"))
             {
-                OnCollected();
+                OnCollided();
             }
         }
         

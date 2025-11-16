@@ -6,6 +6,7 @@ namespace World
     {
         void MoveWithWorld(float deltaMovement);
         void OnDespawn();
+        void OnCollided();
     }
 }
 
