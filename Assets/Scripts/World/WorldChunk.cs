@@ -10,7 +10,7 @@ namespace World
         [SerializeField] private float chunkLength = 20f;
         [SerializeField] private Transform chunkStartPoint;
         [SerializeField] private Transform chunkEndPoint;
-        [SerializeField] private Level chunkLevel;
+        [SerializeField] private Difficulty chunkLevel;
         
 
         private readonly List<IWorldObject> _worldObjects = new List<IWorldObject>();
@@ -110,7 +110,7 @@ namespace World
                 Vector3 start = transform.position;
                 Vector3 end = transform.position + new Vector3(0, 0, chunkLength);
                 
-                WorldManager worldManager = GameManager.Instance.WorldManager;
+                WorldManager worldManager = GameController.Instance.WorldManager;
                 Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0));
                 Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0));
                 Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0));

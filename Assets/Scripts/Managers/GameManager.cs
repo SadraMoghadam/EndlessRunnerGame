@@ -1,13 +1,19 @@
 using Managers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private bool _debugMode = true;
     public bool DebugMode => _debugMode;
 
-    [HideInInspector] public WorldManager WorldManager;
     public static GameManager Instance { get; private set; }
+    private readonly int _defaultHealth = 3;
+    private readonly int _defaultCoins = 0;
+
+    public int PlayerHealth { get; private set; }
+    public int PlayerCoins { get; private set; }
+    public int PlayerGameNumber { get; private set; }
 
     private void Awake()
     {
@@ -20,10 +26,26 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
+
+        PlayerHealth = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, _defaultHealth);
+        PlayerCoins = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Coins, _defaultCoins);
+        PlayerGameNumber = PlayerPrefsManager.GetInt(PlayerPrefsKeys.GameNumber, 0);
     }
 
-    private void Start()
+    public void SetPlayerHealth(int health)
     {
-        WorldManager = GetComponent<WorldManager>();
+        PlayerHealth = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, health);
+        PlayerPrefsManager.SetInt(PlayerPrefsKeys.Health, health);
+    }
+    public void SetPlayerCoins(int coins)
+    {
+        PlayerCoins = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Coins, coins);
+        PlayerPrefsManager.SetInt(PlayerPrefsKeys.Coins, coins);
+    }
+
+    public void IncrementGameNumber()
+    {
+        PlayerGameNumber = PlayerPrefsManager.GetInt(PlayerPrefsKeys.GameNumber, 0);
+        PlayerPrefsManager.SetInt(PlayerPrefsKeys.GameNumber, PlayerGameNumber + 1);
     }
 }

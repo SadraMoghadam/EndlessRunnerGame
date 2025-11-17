@@ -27,6 +27,18 @@ namespace World
         {
             _currentSpeed = baseSpeed;
         }
+
+        private void Start()
+        {
+            // Ensure a valid speed multiplier on start. It's possible the inspector serialized this to 0.
+            if (speedMultiplier <= 0f)
+            {
+                speedMultiplier = 1f;
+            }
+
+            // Ensure current speed is synced with base speed at start
+            _currentSpeed = baseSpeed;
+        }
         
         private void Update()
         {
@@ -60,12 +72,14 @@ namespace World
         
         public void Pause()
         {
+            // set multiplier to zero to pause but remember current multiplier? For now we set to 0.
             speedMultiplier = 0f;
         }
         
         public void Resume()
         {
-            speedMultiplier = 1f;
+            // restore to at least 1 if multiplier is zero to ensure world moves
+            if (speedMultiplier <= 0f) speedMultiplier = 1f;
         }
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UI;
 
 namespace World
 {
@@ -66,6 +67,12 @@ namespace World
             if (_isCollected) return;
             
             _isCollected = true;
+
+            if (GameController.Instance != null)
+            {
+                int currentCoins = GameController.Instance.GetCoins();
+                GameController.Instance.SetCoins(currentCoins + scoreValue);
+            }
             
             OnDespawn();
         }

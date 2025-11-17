@@ -63,7 +63,7 @@ namespace World
         {
             if (worldManager == null)
             {
-                worldManager = GameManager.Instance?.WorldManager;
+                worldManager = GameController.Instance?.WorldManager;
             }
             _nextSpawnZ = playerZPosition;
             SpawnInitialChunks();
