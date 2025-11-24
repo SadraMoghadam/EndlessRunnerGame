@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     private GameManager _gameManager;
     private UIManager _uiManager;
 
+    public PlayerController PlayerController;
     [HideInInspector] public WorldManager WorldManager;
 
     private void Awake()
@@ -27,6 +28,10 @@ public class GameController : MonoBehaviour
         }
         _gameManager = GameManager.Instance;
         _uiManager = UIManager.Instance;
+        if (PlayerController == null)
+        {
+            PlayerController = FindFirstObjectByType<PlayerController>();
+        }
     }
 
     private void Start()

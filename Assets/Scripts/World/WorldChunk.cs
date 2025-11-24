@@ -55,6 +55,23 @@ namespace World
             
             _currentZPosition -= deltaMovement;
             transform.position = new Vector3(transform.position.x, transform.position.y, _currentZPosition);
+
+            var objectsCopy = _worldObjects.ToArray();
+            foreach (var worldObject in objectsCopy)
+            {
+                if (worldObject == null) continue;
+
+                // Try cast to Component to inspect transform parentage
+                var comp = worldObject as Component;
+                if (comp != null)
+                {
+                    // If the object is still a child of this chunk, the hierarchy movement already moved it
+                    if (comp.transform.IsChildOf(transform))
+                        continue;
+                }
+
+                worldObject.MoveWithWorld();
+            }
         }
         
         public void AddWorldObject(IWorldObject worldObject)

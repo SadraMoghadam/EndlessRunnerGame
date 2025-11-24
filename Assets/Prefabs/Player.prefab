@@ -222,7 +222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   laneChangeSpeed: 10
   jumpVelocity: 10
-  gravity: -20
+  gravity: -30
 --- !u!54 &2115273346699098701
 Rigidbody:
   m_ObjectHideFlags: 0

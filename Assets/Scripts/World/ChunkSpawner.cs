@@ -18,6 +18,10 @@ namespace World
         [SerializeField] private int chunksToKeepAhead = 5;
         [SerializeField] private float playerZPosition = 0f;
 
+        [Header("Moving Obstacle Settings")]
+        [Tooltip("Distance from player at which moving (dynamic) obstacles from chunk layouts will be instantiated.")]
+        [SerializeField] private float movingSpawnDistance = 20f;
+
         [Header("Chunk Templates")]
         [Tooltip("List of chunk layouts (ScriptableObjects). Each layout carries its own difficulty setting.")]
         [SerializeField] private List<ChunkLayoutSO> chunkLayouts = new List<ChunkLayoutSO>();
@@ -39,6 +43,9 @@ namespace World
         private List<WorldChunk> _activeChunks = new List<WorldChunk>();
         private float _nextSpawnZ;
 
+        // track which moving cells have been spawned to avoid duplicates
+        private readonly HashSet<string> _spawnedMovingCells = new HashSet<string>();
+
         public float PlayerZPosition 
         { 
             get => playerZPosition; 
@@ -51,11 +58,6 @@ namespace World
             if (_chunkPool == null)
             {
                 Debug.LogError("ChunkSpawner: ChunkPool component not found!");
-            }
-
-            if (worldManager == null)
-            {
-                Debug.LogWarning("ChunkSpawner: WorldManager not assigned and not found in scene. Lane positions might be unavailable.");
             }
         }
 
@@ -77,6 +79,9 @@ namespace World
                 SpawnChunk();
             }
             
+            // spawn moving obstacles from chunk layouts when they approach the player
+            SpawnMovingObstaclesIfNeeded();
+
             DespawnPassedChunks();
         }
 
@@ -94,7 +99,7 @@ namespace World
 
             // choose a layout based on difficulty distribution
             ChunkLayoutSO chosenLayout = ChooseLayoutByDifficulty();
-            Debug.Log("Chosen level " + chosenLayout.name);
+            Debug.Log("Chosen level " + (chosenLayout != null ? chosenLayout.name : "null"));
 
             // get a chunk instance from pool (we assume pool uses a single chunk prefab or handles instantiation)
             WorldChunk chunk = _chunkPool.GetChunk();
@@ -126,6 +131,16 @@ namespace World
                 layout = chosenLayout;
             }
 
+            // Ensure the chunk's ChunkLayoutReference is populated so later code can read it (prevent null when reading active chunks)
+            if (layout != null)
+            {
+                if (layoutComponent == null)
+                {
+                    layoutComponent = chunk.gameObject.AddComponent<ChunkLayoutReference>();
+                }
+                layoutComponent.layout = layout;
+            }
+
             if (layout != null && worldManager != null)
             {
                 ChunkGenerator.GenerateFromScriptable(
@@ -140,6 +155,106 @@ namespace World
             }
 
             _nextSpawnZ = chunk.EndZ;
+        }
+
+        private Transform GetDynamicRoot()
+        {
+            // prefer a DynamicObstacles child under WorldManager so dynamic objects always live under world
+            if (worldManager != null)
+            {
+                var existing = worldManager.transform.Find("DynamicObstacles");
+                if (existing != null) return existing;
+                var go = new GameObject("DynamicObstacles");
+                go.transform.SetParent(worldManager.transform, false);
+                return go.transform;
+            }
+
+            // fallback to pool root if WorldManager isn't available
+            var pool = DynamicObstaclePool.Instance;
+            if (pool != null && pool.Root != null) return pool.Root;
+
+            // final fallback to spawner
+            return transform;
+        }
+
+        private void SpawnMovingObstaclesIfNeeded()
+        {
+            if (movingObstaclePrefab == null || worldManager == null) return;
+            var player = GameController.Instance?.PlayerController;
+            if (player == null) return;
+
+            var pool = DynamicObstaclePool.Instance;
+            if (pool != null) pool.EnsureRootParented();
+            var dynamicRoot = pool != null && pool.Root != null ? pool.Root : GetDynamicRoot();
+
+            for (int i = 0; i < _activeChunks.Count; i++)
+            {
+                var chunk = _activeChunks[i];
+                if (chunk == null) continue;
+
+                var layoutComp = chunk.GetComponent<ChunkLayoutReference>();
+                if (layoutComp == null || layoutComp.layout == null) continue;
+
+                var layout = layoutComp.layout;
+                float cs = layout.cellSize > 0f ? layout.cellSize : 5f;
+                int segments = Mathf.Max(0, layout.segments);
+                int lanes = Mathf.Max(1, layout.lanes);
+
+                for (int seg = 0; seg < segments; seg++)
+                {
+                    for (int ln = 0; ln < lanes; ln++)
+                    {
+                        if (layout.GetCell(seg, ln) != ChunkLayoutSO.CellType.Moving) continue;
+
+                        float worldZ = chunk.StartZ + (seg + 0.5f) * cs;
+
+                        // only consider cells ahead of player and within movingSpawnDistance
+                        if (worldZ < player.transform.position.z) continue;
+                        if (worldZ > player.transform.position.z + movingSpawnDistance) continue;
+
+                        string key = chunk.GetInstanceID() + "_" + seg + "_" + ln;
+                        if (_spawnedMovingCells.Contains(key)) continue;
+
+                        // spawn moving obstacle as a WorldObstacle instance (prefab should have WorldObstacle and be configured as moving)
+                        LaneNumber lane = ln == 0 ? LaneNumber.Left : (ln == 1 ? LaneNumber.Center : LaneNumber.Right);
+                        float x = worldManager.GetLaneXPosition(lane);
+                        Vector3 pos = new Vector3(x, 0f, worldZ);
+
+                        WorldObstacle spawned = null;
+
+                        if (pool != null)
+                        {
+                            spawned = pool.Get();
+                            if (spawned != null)
+                            {
+                                // parent under dynamic root so it sits under World/DynamicObstacles
+                                spawned.transform.SetParent(dynamicRoot, false);
+                                spawned.transform.position = pos;
+                                spawned.transform.rotation = Quaternion.identity;
+                                spawned.SetDormant(true);
+                            }
+                        }
+
+                        if (spawned == null)
+                        {
+                            var inst = Object.Instantiate(movingObstaclePrefab, pos, Quaternion.identity, dynamicRoot);
+                            if (inst != null)
+                            {
+                                spawned = inst.GetComponent<WorldObstacle>();
+                                if (spawned != null)
+                                {
+                                    spawned.SetDormant(true);
+                                }
+                            }
+                        }
+
+                        if (spawned != null)
+                        {
+                            _spawnedMovingCells.Add(key);
+                        }
+                    }
+                }
+            }
         }
 
         private ChunkLayoutSO ChooseLayoutByDifficulty()
@@ -221,6 +336,7 @@ namespace World
             }
             _activeChunks.Clear();
             _nextSpawnZ = playerZPosition;
+            _spawnedMovingCells.Clear();
         }
     }
 }

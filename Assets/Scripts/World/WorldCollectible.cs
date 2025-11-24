@@ -1,5 +1,4 @@
 using UnityEngine;
-using UI;
 
 namespace World
 {
@@ -32,15 +31,11 @@ namespace World
             }
         }
         
-        public void MoveWithWorld(float deltaMovement)
+        public void MoveWithWorld()
         {
-            if (!_isActive || _isCollected) return;
-            
-            transform.position = new Vector3(
-                transform.position.x,
-                transform.position.y,
-                transform.position.z - deltaMovement
-            );
+            return;
+            //if (!_isActive) return;
+            //transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - deltaMovement);
         }
         
         public void OnDespawn()
@@ -70,8 +65,7 @@ namespace World
 
             if (GameController.Instance != null)
             {
-                int currentCoins = GameController.Instance.GetCoins();
-                GameController.Instance.SetCoins(currentCoins + scoreValue);
+                GameController.Instance.SetCoins(GameManager.Instance.PlayerCoins + scoreValue);
             }
             
             OnDespawn();

@@ -343,6 +343,7 @@ GameObject:
   - component: {fileID: 166607344}
   - component: {fileID: 166607343}
   - component: {fileID: 166607342}
+  - component: {fileID: 166607346}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -363,8 +364,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.ChunkPool
   chunkPrefab: {fileID: 4911362939771434559, guid: f7b7dfd04ce576b45853a54bd3a32122, type: 3}
-  initialPoolSize: 5
-  maxPoolSize: 20
+  initialPoolSize: 2
+  maxPoolSize: 5
 --- !u!114 &166607343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,18 +378,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 897fdf5e8c1bb794993f3bf233afc50a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.ChunkSpawner
-  spawnDistanceAhead: 150
-  despawnDistanceBehind: 0
-  chunksToKeepAhead: 2
+  spawnDistanceAhead: 100
+  despawnDistanceBehind: 10
+  chunksToKeepAhead: 1
   playerZPosition: 0
+  movingSpawnDistance: 20
   chunkLayouts:
   - {fileID: 11400000, guid: abca83151b0720f4eba0bd6c4a1fd4c4, type: 2}
-  - {fileID: 11400000, guid: c7d6589c3807aeb418a37c8f82fbd74a, type: 2}
-  - {fileID: 11400000, guid: 8ef1598a7b9e0c04cab83d282687c0ca, type: 2}
-  - {fileID: 11400000, guid: 47e6f830a20672f48be640f541995c96, type: 2}
-  - {fileID: 11400000, guid: badd790455c4d3e4892d52a5cc2814dc, type: 2}
-  - {fileID: 11400000, guid: 3d92e86e7197f7a4f89fc0944504abd9, type: 2}
-  - {fileID: 11400000, guid: 6bb751b9843d7be4882287cc1dfe135d, type: 2}
+  - {fileID: 11400000, guid: 6c1dcf2c8c1b59f4a971c3a56b32fbb5, type: 2}
+  - {fileID: 11400000, guid: 96a0d56206af84b4e8041bbdf7f23067, type: 2}
+  - {fileID: 11400000, guid: 1dc54a447f75a1a48ab40b10946c93a2, type: 2}
   defaultChunkLayout: {fileID: 0}
   movingObstaclePrefab: {fileID: 5489109247590574262, guid: 1efa0400a28a70944ae4a20d005810c2, type: 3}
   staticObstaclePrefab: {fileID: 5489109247590574262, guid: cd721416b57402843903a87434f8aceb, type: 3}
@@ -406,11 +405,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c415543245e4454448d6c45efafcdb83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldMover
-  baseSpeed: 35
+  baseSpeed: 80
   speedMultiplier: 0.2
   useAcceleration: 1
   accelerationRate: 0.2
-  maxSpeed: 50
+  maxSpeed: 100
 --- !u!4 &166607345
 Transform:
   m_ObjectHideFlags: 0
@@ -426,6 +425,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &166607346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 166607341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 877cc617393d5bd47aa9e55e7c59c88d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::World.DynamicObstaclePool
+  prefab: {fileID: 5489109247590574262, guid: 1efa0400a28a70944ae4a20d005810c2, type: 3}
+  initialSize: 4
+  maxSize: 10
 --- !u!1001 &259647245
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -645,6 +659,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &494896115 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5025212966178356482, guid: 649b95866c2d0af4cab90976f6b73378, type: 3}
+  m_PrefabInstance: {fileID: 2479528140405150710}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96a7b7a19d03e254c99790955a69ef00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1 &591314399
 GameObject:
   m_ObjectHideFlags: 0
@@ -1440,6 +1465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee176d3e90ba8e44385ea0e133d72a80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameController
+  PlayerController: {fileID: 494896115}
   WorldManager: {fileID: 0}
 --- !u!114 &2005647266
 MonoBehaviour:
@@ -1641,10 +1667,6 @@ PrefabInstance:
     - target: {fileID: 4205178670116157804, guid: f7b7dfd04ce576b45853a54bd3a32122, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4911362939771434559, guid: f7b7dfd04ce576b45853a54bd3a32122, type: 3}
-      propertyPath: chunkLength
-      value: 300
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

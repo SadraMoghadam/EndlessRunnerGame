@@ -31,7 +31,7 @@ public class ChunkLayoutEditor : Editor
         EditorGUILayout.LabelField("Legend");
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Empty")) { GUIUtility.keyboardControl = 0; }
-        if (GUILayout.Button("Moving (1)")) { GUIUtility.keyboardControl = 0; }
+        //if (GUILayout.Button("Moving (1)")) { GUIUtility.keyboardControl = 0; }
         if (GUILayout.Button("Static (2)")) { GUIUtility.keyboardControl = 0; }
         if (GUILayout.Button("Jump (3)")) { GUIUtility.keyboardControl = 0; }
         if (GUILayout.Button("Collectible (10)")) { GUIUtility.keyboardControl = 0; }

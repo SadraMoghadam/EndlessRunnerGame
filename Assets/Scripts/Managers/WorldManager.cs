@@ -14,6 +14,8 @@ namespace Managers
         private readonly Lane _centerLane = new Lane(LaneNumber.Left, -1.66f, 1.66f);
         private readonly Lane _rightLane = new Lane(LaneNumber.Left, 1.67f, 5f);
 
+        public ChunkSpawner ChunkSpawner => chunkSpawner;
+
         private void Awake()
         {
             if (worldMover == null)
@@ -90,6 +92,12 @@ namespace Managers
             {
                 worldMover.ResetSpeed();
             }
+
+            // Return all pooled dynamic obstacles so they are disabled and parented under pool root
+            if (World.DynamicObstaclePool.Instance != null)
+            {
+                World.DynamicObstaclePool.Instance.ReturnAll();
+            }
         }
         
         public float GetCurrentSpeed()
@@ -100,6 +108,12 @@ namespace Managers
         public float GetTotalDistance()
         {
             return worldMover != null ? worldMover.TotalDistanceTraveled : 0f;
+        }
+        
+        // New: expose movement delta (meters moved this frame) so external objects can move with the world
+        public float GetMovementDelta()
+        {
+            return worldMover != null ? worldMover.GetMovementDelta() : 0f;
         }
         
         private void OnGUI()

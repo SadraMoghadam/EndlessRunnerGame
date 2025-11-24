@@ -127,6 +127,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 1
   damage: 1
+  isMoving: 1
+  activationDistance: 20
+  despawnBehindPlayerOffset: 5
+  minMoveSpeed: 7
+  maxMoveSpeed: 9
 --- !u!54 &4104421355589033638
 Rigidbody:
   m_ObjectHideFlags: 0
