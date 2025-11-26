@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     private readonly int _defaultHealth = 3;
     private readonly int _defaultCoins = 0;
 
-    public int PlayerHealth { get; private set; }
+    //public int PlayerHealth { get; private set; }
     public int PlayerCoins { get; private set; }
     public int PlayerGameNumber { get; private set; }
 
@@ -27,16 +27,16 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(this.gameObject);
         }
 
-        PlayerHealth = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, _defaultHealth);
+        //PlayerHealth = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, _defaultHealth);
         PlayerCoins = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Coins, _defaultCoins);
         PlayerGameNumber = PlayerPrefsManager.GetInt(PlayerPrefsKeys.GameNumber, 0);
     }
 
-    public void SetPlayerHealth(int health)
-    {
-        PlayerHealth = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, health);
-        PlayerPrefsManager.SetInt(PlayerPrefsKeys.Health, health);
-    }
+    //public void SetPlayerHealth(int health)
+    //{
+    //    PlayerHealth = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, health);
+    //    PlayerPrefsManager.SetInt(PlayerPrefsKeys.Health, health);
+    //}
     public void SetPlayerCoins(int coins)
     {
         PlayerCoins = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Coins, coins);

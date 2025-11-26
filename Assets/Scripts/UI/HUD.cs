@@ -70,8 +70,8 @@ namespace UI
         {
             if (GameController.Instance == null) return;
 
-            SetHealth(GameController.Instance.Health);
-            SetRunCoins(GameController.Instance.Coins);
+            SetHealth(GameController.Instance.GameHealth);
+            SetRunCoins(GameController.Instance.GameCoins);
         }
 
         // Optional: expose an explicit force refresh method used by other systems or the UI manager.

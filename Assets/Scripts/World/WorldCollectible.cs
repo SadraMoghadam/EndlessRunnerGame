@@ -65,7 +65,7 @@ namespace World
 
             if (GameController.Instance != null)
             {
-                GameController.Instance.SetCoins(GameManager.Instance.PlayerCoins + scoreValue);
+                GameController.Instance.SetCoins(GameController.Instance.GameCoins + scoreValue);
             }
             
             OnDespawn();

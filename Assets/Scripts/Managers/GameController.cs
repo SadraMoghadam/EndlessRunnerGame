@@ -5,12 +5,13 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
-    public int Health { get; private set; }
-    public int Coins { get; private set; } = 0;
+    public int GameHealth { get; private set; }
+    public int GameCoins { get; private set; } = 0;
     public bool IsGameOver { get; private set; } = false;
 
     private GameManager _gameManager;
     private UIManager _uiManager;
+    private int _defaultHealth = 3;
 
     public PlayerController PlayerController;
     [HideInInspector] public WorldManager WorldManager;
@@ -36,54 +37,55 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         WorldManager = GetComponent<WorldManager>();
-        SetHealth(_gameManager.PlayerHealth);
+        SetHealth(_defaultHealth);
         SetCoins(0);
     }
 
     public int GetCoins()
     {
-        return Coins;
+        return GameCoins;
     }
 
     public void SetCoins(int amount)
     {
-        Coins = amount;
-        _uiManager.PlayerHUD?.SetRunCoins(Coins);
+        GameCoins = amount;
+        _uiManager.PlayerHUD?.SetRunCoins(GameCoins);
     }
 
     public int GetHealth()
     {
-        return Health;
+        return GameHealth;
     }
 
     public void SetHealth(int amount)
     {
-        Health = amount;
+        GameHealth = amount;
         _uiManager.PlayerHUD?.SetHealth(amount);
     }
 
     public void GameOver()
     {
         int currentHealth = GetHealth();
-        SetHealth(--currentHealth);
+        currentHealth = Mathf.Max(0, --currentHealth);
+        SetHealth(currentHealth);
         SaveProgress();
         IsGameOver = true;
         WorldManager.ResetWorld();
-        ResetGame(_gameManager.PlayerHealth);
+        ResetGame(currentHealth);
         _uiManager.PlayerHUD.RefreshFromGameManager();
     }
 
-    public void ResetGame(int startingHealth)
+    public void ResetGame(int health)
     {
-        Health = PlayerPrefsManager.GetInt(PlayerPrefsKeys.Health, 0);
-        Coins = 0;
+        GameHealth = health;
+        GameCoins = 0;
         IsGameOver = false;
     }
 
     public void SaveProgress()
     {
-        _gameManager.SetPlayerCoins(PlayerPrefsManager.GetInt(PlayerPrefsKeys.Coins, 0) + Coins);
-        _gameManager.SetPlayerHealth(Health);
+        _gameManager.SetPlayerCoins(PlayerPrefsManager.GetInt(PlayerPrefsKeys.Coins, 0) + GameCoins);
+        //_gameManager.SetPlayerHealth(Health);
         _gameManager.IncrementGameNumber();
     }
 }
