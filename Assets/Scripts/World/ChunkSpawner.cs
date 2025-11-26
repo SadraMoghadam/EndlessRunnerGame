@@ -6,11 +6,6 @@ namespace World
 {
     public class ChunkSpawner : MonoBehaviour
     {
-        //[System.Serializable]
-        //public class ChunkEntry
-        //{
-        //    public ChunkLayoutSO layout;
-        //}
 
         [Header("Spawn Settings")]
         [SerializeField] private float spawnDistanceAhead = 20f;
@@ -21,6 +16,8 @@ namespace World
         [Header("Moving Obstacle Settings")]
         [Tooltip("Distance from player at which moving (dynamic) obstacles from chunk layouts will be instantiated.")]
         [SerializeField] private float movingSpawnDistance = 20f;
+        [Tooltip("Distance from player at which a spawned moving obstacle will be activated (taken out of dormant state)")]
+        [SerializeField] private float movingActivationDistance = 10f;
 
         [Header("Chunk Templates")]
         [Tooltip("List of chunk layouts (ScriptableObjects). Each layout carries its own difficulty setting.")]
@@ -78,11 +75,18 @@ namespace World
             {
                 SpawnChunk();
             }
-            
+
             // spawn moving obstacles from chunk layouts when they approach the player
-            SpawnMovingObstaclesIfNeeded();
+            SpawnMovingObstacles();
 
             DespawnPassedChunks();
+
+            // ensure pooled moving obstacles that have passed the player are returned/deactivated
+            var pool = DynamicObstaclePool.Instance;
+            if (pool != null)
+            {
+                pool.DeactivatePassedMovingObstacles(playerZPosition, despawnDistanceBehind);
+            }
         }
 
         private void SpawnInitialChunks()
@@ -101,7 +105,6 @@ namespace World
             ChunkLayoutSO chosenLayout = ChooseLayoutByDifficulty();
             Debug.Log("Chosen level " + (chosenLayout != null ? chosenLayout.name : "null"));
 
-            // get a chunk instance from pool (we assume pool uses a single chunk prefab or handles instantiation)
             WorldChunk chunk = _chunkPool.GetChunk();
             if (chunk == null) return;
 
@@ -157,35 +160,14 @@ namespace World
             _nextSpawnZ = chunk.EndZ;
         }
 
-        private Transform GetDynamicRoot()
-        {
-            // prefer a DynamicObstacles child under WorldManager so dynamic objects always live under world
-            if (worldManager != null)
-            {
-                var existing = worldManager.transform.Find("DynamicObstacles");
-                if (existing != null) return existing;
-                var go = new GameObject("DynamicObstacles");
-                go.transform.SetParent(worldManager.transform, false);
-                return go.transform;
-            }
-
-            // fallback to pool root if WorldManager isn't available
-            var pool = DynamicObstaclePool.Instance;
-            if (pool != null && pool.Root != null) return pool.Root;
-
-            // final fallback to spawner
-            return transform;
-        }
-
-        private void SpawnMovingObstaclesIfNeeded()
+        private void SpawnMovingObstacles()
         {
             if (movingObstaclePrefab == null || worldManager == null) return;
             var player = GameController.Instance?.PlayerController;
             if (player == null) return;
 
             var pool = DynamicObstaclePool.Instance;
-            if (pool != null) pool.EnsureRootParented();
-            var dynamicRoot = pool != null && pool.Root != null ? pool.Root : GetDynamicRoot();
+            var dynamicRoot = pool.Root;
 
             for (int i = 0; i < _activeChunks.Count; i++)
             {
@@ -227,10 +209,9 @@ namespace World
                             spawned = pool.Get();
                             if (spawned != null)
                             {
-                                // parent under dynamic root so it sits under World/DynamicObstacles
-                                spawned.transform.SetParent(dynamicRoot, false);
                                 spawned.transform.position = pos;
                                 spawned.transform.rotation = Quaternion.identity;
+                                // keep it dormant until close to player
                                 spawned.SetDormant(true);
                             }
                         }
@@ -250,6 +231,13 @@ namespace World
 
                         if (spawned != null)
                         {
+                            // if within activation distance, activate immediately
+                            float distanceToPlayer = spawned.transform.position.z - player.transform.position.z;
+                            if (distanceToPlayer <= movingActivationDistance)
+                            {
+                                spawned.SetDormant(false);
+                            }
+
                             _spawnedMovingCells.Add(key);
                         }
                     }
@@ -311,6 +299,24 @@ namespace World
                 {
                     WorldChunk chunkToRemove = _activeChunks[i];
                     _activeChunks.RemoveAt(i);
+                    
+                    // Clean up spawned moving cells for this chunk to prevent HashSet from growing indefinitely
+                    if (chunkToRemove != null)
+                    {
+                        int chunkInstanceId = chunkToRemove.GetInstanceID();
+                        var keysToRemove = new List<string>();
+                        foreach (var key in _spawnedMovingCells)
+                        {
+                            if (key.StartsWith(chunkInstanceId + "_"))
+                            {
+                                keysToRemove.Add(key);
+                            }
+                        }
+                        foreach (var key in keysToRemove)
+                        {
+                            _spawnedMovingCells.Remove(key);
+                        }
+                    }
                     
                     if (_chunkPool != null && chunkToRemove != null)
                     {

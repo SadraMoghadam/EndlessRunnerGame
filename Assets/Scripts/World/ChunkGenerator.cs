@@ -39,8 +39,26 @@ namespace World
 
                     switch (cell)
                     {
-                        // MOVING obstacles are not instantiated here. They will be spawned by the ChunkSpawner/ChunkMovingSpawner
                         case ChunkLayoutSO.CellType.Moving:
+                            pos = new Vector3(x,0, chunk.StartZ + zPos);
+
+                            var pool = DynamicObstaclePool.Instance;
+                            if (pool != null)
+                            {
+                                var pooled = pool.Get();
+                                if (pooled != null)
+                                {
+                                    //var parent = pool.Root != null ? pool.Root : chunk.transform;
+                                    //pooled.transform.SetParent(parent, false);
+                                    pooled.transform.position = pos;
+                                    pooled.transform.rotation = Quaternion.identity;
+                                    // keep it dormant until the spawner activates it
+                                    pooled.SetDormant(true);
+                                    // return to pool so it remains available for activation later
+                                    pool.Return(pooled);
+                                }
+                            }
+
                             continue;
                         case ChunkLayoutSO.CellType.Static:
                             prefabToInstantiate = staticObstaclePrefab;
@@ -63,7 +81,6 @@ namespace World
                         Debug.LogWarning($"ChunkGenerator: prefab for cell {cell} is null. Skipping.");
                         continue;
                     }
-
                     Object.Instantiate(prefabToInstantiate, pos, Quaternion.identity, chunk.transform);
                 }
             }

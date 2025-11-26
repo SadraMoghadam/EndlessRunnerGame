@@ -383,6 +383,7 @@ MonoBehaviour:
   chunksToKeepAhead: 1
   playerZPosition: 0
   movingSpawnDistance: 20
+  movingActivationDistance: 10
   chunkLayouts:
   - {fileID: 11400000, guid: abca83151b0720f4eba0bd6c4a1fd4c4, type: 2}
   - {fileID: 11400000, guid: 6c1dcf2c8c1b59f4a971c3a56b32fbb5, type: 2}
@@ -438,8 +439,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.DynamicObstaclePool
   prefab: {fileID: 5489109247590574262, guid: 1efa0400a28a70944ae4a20d005810c2, type: 3}
-  initialSize: 4
-  maxSize: 10
+  initialSize: 20
+  maxSize: 25
+  World: {fileID: 166607344}
 --- !u!1001 &259647245
 PrefabInstance:
   m_ObjectHideFlags: 0

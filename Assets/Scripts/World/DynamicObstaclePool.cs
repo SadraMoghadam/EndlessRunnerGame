@@ -13,6 +13,7 @@ namespace World
         [SerializeField] private GameObject prefab;
         [SerializeField] private int initialSize = 10;
         [SerializeField] private int maxSize = 50;
+        [SerializeField] private WorldMover World;
 
         private readonly Queue<WorldObstacle> _pool = new Queue<WorldObstacle>();
         private readonly HashSet<WorldObstacle> _active = new HashSet<WorldObstacle>();
@@ -21,7 +22,6 @@ namespace World
         public Transform Root => _root;
 
         private const string PoolFolderName = "DynamicObstacles";
-        private const string WorldRootName = "World";
 
         private void Awake()
         {
@@ -32,13 +32,10 @@ namespace World
             }
 
             Instance = this;
-
-            // Determine a scene-level World parent (avoid parenting under DontDestroyOnLoad objects)
-            var targetParent = FindSceneWorldParent();
+            var targetParent = World.transform;
 
             if (targetParent != null)
             {
-                // Reuse or create the single folder under World to hold dynamic obstacles (avoid duplicate nested folders)
                 var folder = targetParent.Find(PoolFolderName);
                 if (folder == null)
                 {
@@ -53,10 +50,7 @@ namespace World
             }
             else
             {
-                // No world parent yet: create a temporary root for pooled objects. This will be reparented in Start when World becomes available.
-                var tempRoot = new GameObject(PoolFolderName);
-                tempRoot.transform.SetParent(transform, false);
-                _root = tempRoot.transform;
+                return;
             }
 
             for (int i = 0; i < initialSize; i++)
@@ -64,92 +58,6 @@ namespace World
                 var inst = CreateNewInstance();
                 _pool.Enqueue(inst);
             }
-        }
-
-        private void Start()
-        {
-            // If World became available after Awake, reparent the root under it so pooled objects live under World
-            EnsureRootParented();
-        }
-
-        public void EnsureRootParented()
-        {
-            if (_root == null) return;
-            var wmParent = FindSceneWorldParent();
-            if (wmParent != null)
-            {
-                var folder = wmParent.Find(PoolFolderName);
-                if (folder == null)
-                {
-                    var folderGo = new GameObject(PoolFolderName);
-                    folderGo.transform.SetParent(wmParent, false);
-                    folder = folderGo.transform;
-                }
-
-                // If our current root isn't the canonical folder, move children and destroy temporary root
-                if (_root != folder)
-                {
-                    // Move any pooled children under the canonical folder
-                    var children = new List<Transform>();
-                    for (int i = 0; i < _root.childCount; i++)
-                    {
-                        children.Add(_root.GetChild(i));
-                    }
-
-                    foreach (var child in children)
-                    {
-                        child.SetParent(folder, false);
-                    }
-
-                    // If the temporary root was a GameObject we created under this pool, destroy it
-                    if (_root.gameObject.scene == gameObject.scene && _root.parent == transform)
-                    {
-                        Destroy(_root.gameObject);
-                    }
-
-                    _root = folder;
-                }
-            }
-        }
-
-        // Find a non-persistent scene-level parent for world objects.
-        // Preference order:
-        // 1) a GameObject named "World" in the active scene
-        // 2) a WorldManager instance that is not in the DontDestroyOnLoad scene
-        // 3) create a new GameObject named "World" in the active scene
-        private Transform FindSceneWorldParent()
-        {
-            // 1) Try to find a GameObject named "World" in the active scene
-            var worldGo = GameObject.Find(WorldRootName);
-            if (worldGo != null && !IsPersistent(worldGo))
-                return worldGo.transform;
-
-            // 2) Search for WorldManager instances in scenes and pick one that's not persistent
-            var managers = FindObjectsOfType<Managers.WorldManager>();
-            foreach (var wm in managers)
-            {
-                if (wm != null && !IsPersistent(wm.gameObject))
-                {
-                    return wm.transform;
-                }
-            }
-
-            // 3) If nothing found, create a scene-level World root in the active scene
-            var activeScene = SceneManager.GetActiveScene();
-            if (activeScene.IsValid())
-            {
-                var created = new GameObject(WorldRootName);
-                SceneManager.MoveGameObjectToScene(created, activeScene);
-                return created.transform;
-            }
-
-            // As a last resort, return null so caller can temporarily parent to this pool
-            return null;
-        }
-
-        private static bool IsPersistent(GameObject go)
-        {
-            return go != null && go.scene.name == "DontDestroyOnLoad";
         }
 
         private WorldObstacle CreateNewInstance()
@@ -166,17 +74,24 @@ namespace World
 
         public WorldObstacle Get()
         {
-            EnsureRootParented();
             WorldObstacle item = null;
             if (_pool.Count > 0)
             {
                 item = _pool.Dequeue();
-                item?.gameObject.SetActive(true);
+                if (item != null)
+                {
+                    // Ensure the obstacle is reset before reuse (in case it wasn't properly reset)
+                    item.Reset();
+                    item.gameObject.SetActive(true);
+                }
             }
             else if (prefab != null && _pool.Count + 1 <= maxSize)
             {
                 item = CreateNewInstance();
-                item.gameObject.SetActive(true);
+                if (item != null)
+                {
+                    item.gameObject.SetActive(true);
+                }
             }
 
             if (item != null)
@@ -193,8 +108,10 @@ namespace World
 
             if (_active.Contains(item)) _active.Remove(item);
 
+            // Reset the obstacle to its initial state so it can be reused
+            item.Reset();
+            
             // put back under pool root and disable
-            item.SetDormant(true);
             item.transform.SetParent(_root, false);
             item.gameObject.SetActive(false);
 
@@ -211,6 +128,26 @@ namespace World
             foreach (var item in copy)
             {
                 Return(item);
+            }
+        }
+
+        public void DeactivatePassedMovingObstacles(float playerZ, float despawnBehindOffset)
+        {
+            if (_active.Count == 0) return;
+
+            var copy = new List<WorldObstacle>(_active);
+            foreach (var item in copy)
+            {
+                if (item == null) continue;
+
+                // only consider moving obstacles
+                if (!item.IsMoving) continue;
+
+                // if behind player beyond threshold, return to pool
+                if (item.transform.position.z < playerZ - despawnBehindOffset)
+                {
+                    Return(item);
+                }
             }
         }
     }

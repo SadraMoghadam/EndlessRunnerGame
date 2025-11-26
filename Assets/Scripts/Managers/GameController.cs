@@ -24,7 +24,6 @@ public class GameController : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(this.gameObject);
         }
         _gameManager = GameManager.Instance;
         _uiManager = UIManager.Instance;

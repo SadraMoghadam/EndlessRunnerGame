@@ -190,6 +190,24 @@ namespace World
             }
         }
 
+        /// <summary>
+        /// Resets the obstacle to its initial state so it can be reused from the pool.
+        /// </summary>
+        public void Reset()
+        {
+            isActive = true;
+            _movementActive = false;
+            _isDormant = true;
+            _moveSpeed = 0f;
+            parentChunk = null;
+
+            if (_collider == null) _collider = GetComponent<Collider>();
+            if (_collider != null)
+            {
+                _collider.enabled = false;
+            }
+        }
+
         public void MoveWithWorld()
         {
             if (!isActive) return;
