@@ -14,6 +14,7 @@ namespace UI
 
         [Header("References")]
         [SerializeField] private HUD playerHUD;
+        [SerializeField] private GameOverPanel gameOverPanel;
 
         private void Awake()
         {
@@ -34,6 +35,7 @@ namespace UI
         }
 
         public HUD PlayerHUD => playerHUD;
+        public GameOverPanel GameOverPanel => gameOverPanel;
 
         /// <summary>
         /// Force a refresh on all known UI components.

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using World;
 
@@ -83,21 +84,38 @@ namespace Managers
         
         public void ResetWorld()
         {
+            StartCoroutine(ResetWorldProcess());
+
             if (chunkSpawner != null)
             {
                 chunkSpawner.DespawnAllChunks();
             }
-            
-            if (worldMover != null)
-            {
-                worldMover.ResetSpeed();
-            }
 
-            // Return all pooled dynamic obstacles so they are disabled and parented under pool root
-            if (World.DynamicObstaclePool.Instance != null)
+            if (DynamicObstaclePool.Instance != null)
             {
-                World.DynamicObstaclePool.Instance.ReturnAll();
+                DynamicObstaclePool.Instance.ReturnAll();
             }
+        }
+
+        private IEnumerator ResetWorldProcess()
+        {
+            yield return new WaitForSeconds(GameController.Instance.StartTime);
+            worldMover?.ResetSpeed();
+            worldMover?.Resume();
+        }
+
+        public void ResetToLastCheckpoint(float duration)
+        {
+            StartCoroutine(ResetToLastCheckpointProcess(duration));
+        }
+
+        private IEnumerator ResetToLastCheckpointProcess(float duration)
+        {
+            worldMover?.Reverse();
+            yield return new WaitForSeconds(duration);
+            worldMover?.Pause();
+            yield return new WaitForSeconds(GameController.Instance.StartTime);
+            worldMover?.Resume();
         }
         
         public float GetCurrentSpeed()

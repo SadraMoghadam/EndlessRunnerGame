@@ -234,6 +234,7 @@ namespace World
             if (GameController.Instance != null)
             {
                 GameController.Instance.GameOver();
+                UIManager.Instance.GameOverPanel?.Show();
             }
         }
 

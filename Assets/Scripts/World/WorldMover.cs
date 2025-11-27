@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace World
@@ -22,10 +23,12 @@ namespace World
             set => speedMultiplier = Mathf.Clamp(value, 0f, 5f); 
         }
         public float TotalDistanceTraveled => _totalDistanceTraveled;
-        
+        private float _defaultSpeedMultiplier;
+
         private void Awake()
         {
             _currentSpeed = baseSpeed;
+            _defaultSpeedMultiplier = speedMultiplier;
         }
 
         private void Start()
@@ -78,8 +81,12 @@ namespace World
         
         public void Resume()
         {
-            // restore to at least 1 if multiplier is zero to ensure world moves
-            if (speedMultiplier <= 0f) speedMultiplier = 1f;
+            if (speedMultiplier <= 0f) speedMultiplier = _defaultSpeedMultiplier;
+        }
+
+        public void Reverse()
+        {
+            speedMultiplier = -1 * _defaultSpeedMultiplier * 2;
         }
     }
 }

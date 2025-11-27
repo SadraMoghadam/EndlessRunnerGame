@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ccc18afb8ad7d042a78a812ec301284, type: 3}
   m_Name: EasyChunk1 1
   m_EditorClassIdentifier: Assembly-CSharp::World.ChunkLayoutSO
-  difficulty: 0
+  difficulty: 1
   segments: 50
   lanes: 3
   cellSize: 5

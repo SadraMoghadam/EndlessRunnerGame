@@ -1,6 +1,7 @@
 using Managers;
 using UI;
 using UnityEngine;
+using World;
 
 public class GameController : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class GameController : MonoBehaviour
 
     public PlayerController PlayerController;
     [HideInInspector] public WorldManager WorldManager;
+    [HideInInspector] public float ReverseTime = 0.5f;
+    [HideInInspector] public float StartTime = 1;
+    [HideInInspector] public float PlayerColliderDisabledTime = 2;
 
     private void Awake()
     {
@@ -70,16 +74,26 @@ public class GameController : MonoBehaviour
         SetHealth(currentHealth);
         SaveProgress();
         IsGameOver = true;
-        WorldManager.ResetWorld();
-        ResetGame(currentHealth);
-        _uiManager.PlayerHUD.RefreshFromGameManager();
+        if (DynamicObstaclePool.Instance != null)
+        {
+            DynamicObstaclePool.Instance.ReturnAll();
+        }
+        WorldManager.PauseWorld();
     }
 
-    public void ResetGame(int health)
+    public void ResetGame()
     {
-        GameHealth = health;
         GameCoins = 0;
         IsGameOver = false;
+        _uiManager.PlayerHUD.RefreshFromGameManager();
+        WorldManager.ResetWorld();
+    }
+
+    public void ResetToLastCheckpoint()
+    {
+        IsGameOver = false;
+        PlayerController.OnDeath();
+        WorldManager.ResetToLastCheckpoint(ReverseTime);
     }
 
     public void SaveProgress()

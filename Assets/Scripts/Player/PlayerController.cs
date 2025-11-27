@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
 using World;
@@ -48,6 +49,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (GameController.Instance.IsGameOver)
+            return;
         HandleInput();
         SmoothMoveToTargetLane();
         ApplyGravityAndJump();
@@ -87,7 +90,6 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 newPos = transform.position;
         newPos.x = Mathf.MoveTowards(transform.position.x, _targetPosition.x, laneChangeSpeed * Time.deltaTime);
-        // preserve current vertical position (jumping) and z
         newPos.y = transform.position.y;
         newPos.z = transform.position.z;
         transform.position = newPos;
@@ -121,18 +123,32 @@ public class PlayerController : MonoBehaviour
         transform.position = p;
     }
 
-    // Optional: allow external code to set lane x positions (for example from WorldChunk)
-    public void SetLanePositions(float left, float center, float right)
-    {
-        _lanePositions[0] = left;
-        _lanePositions[1] = center;
-        _lanePositions[2] = right;
-        // update target and snap current x if needed
-        _targetPosition.x = _lanePositions[_currentLaneIndex];
-    }
-
     public LaneNumber GetCurrentLane()
     {
         return _currentLaneIndex == 0 ? LaneNumber.Left : (_currentLaneIndex == 1 ? LaneNumber.Center : LaneNumber.Right);
+    }
+
+    public int GetDifferenceFromCenterLane()
+    {
+        return -1 * (_currentLaneIndex - 1);
+    }
+
+    public void OnDeath()
+    {
+        Debug.Log(GetDifferenceFromCenterLane());
+        TryChangeLane(GetDifferenceFromCenterLane());
+        StartCoroutine(ResetCollider());
+    }
+
+    private IEnumerator ResetCollider()
+    {
+        SetColliderEnabled(false);
+        yield return new WaitForSeconds(_gameController.ReverseTime + _gameController.StartTime + _gameController.PlayerColliderDisabledTime);
+        SetColliderEnabled(true);
+    }
+
+    public void SetColliderEnabled(bool enabled)
+    {
+        transform.GetComponent<Collider>().enabled = enabled;
     }
 }
