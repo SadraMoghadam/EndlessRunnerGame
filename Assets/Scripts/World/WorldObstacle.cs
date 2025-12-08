@@ -54,7 +54,7 @@ namespace World
 
         private void Start()
         {
-            // ensure collider disabled if dormant
+
             if (_isDormant && _collider != null)
             {
                 _collider.enabled = false;
@@ -74,6 +74,11 @@ namespace World
                     _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
                 }
             }
+
+            if (GameManager.Instance.NoCollisionMode)
+                _collider.enabled = false;
+            else
+                _collider.enabled = true;
         }
 
         private void Update()

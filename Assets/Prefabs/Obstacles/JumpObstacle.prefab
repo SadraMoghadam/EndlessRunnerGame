@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 85c6468cea1c10e48803977a046b7a76, type: 2}
+  - {fileID: 2100000, guid: c0c2fef09727713438f2ff6be3a2cccc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -127,6 +127,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 1
   damage: 1
+  isMoving: 0
+  activationDistance: 20
+  despawnBehindPlayerOffset: 5
+  minMoveSpeed: 2
+  maxMoveSpeed: 5
 --- !u!54 &6658135418600067257
 Rigidbody:
   m_ObjectHideFlags: 0

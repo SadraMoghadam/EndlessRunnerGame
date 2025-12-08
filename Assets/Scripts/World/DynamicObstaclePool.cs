@@ -99,6 +99,11 @@ namespace World
                 _active.Add(item);
             }
 
+            if (GameManager.Instance.NoCollisionMode)
+                item.GetComponent<Collider>().enabled = false;
+            else
+                item.GetComponent<Collider>().enabled = true;
+
             return item;
         }
 

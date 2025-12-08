@@ -16,6 +16,10 @@ namespace World
         
         private void Awake()
         {
+            if(GameManager.Instance.NoCollisionMode)
+                gameObject.GetComponent<Collider>().enabled = false;
+            else
+                gameObject.GetComponent<Collider>().enabled = true;
             _parentChunk = GetComponentInParent<WorldChunk>();
             if (_parentChunk != null)
             {

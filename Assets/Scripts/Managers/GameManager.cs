@@ -7,6 +7,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool _debugMode = true;
     public bool DebugMode => _debugMode;
 
+
+    [SerializeField] private bool _noCollisionMode = true;
+    public bool NoCollisionMode => _noCollisionMode;
+
     public static GameManager Instance { get; private set; }
     private readonly int _defaultHealth = 3;
     private readonly int _defaultCoins = 0;
