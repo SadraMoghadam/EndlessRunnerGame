@@ -9,7 +9,7 @@ namespace World
     {
         [Header("Obstacle Settings")]
         [SerializeField] private bool destroyOnDespawn = true;
-        [SerializeField] private int damage = 1;
+        [SerializeField] private float damage = 1;
 
         // dynamic/moving-specific
         [Header("Dynamic Settings")]
@@ -19,13 +19,11 @@ namespace World
         [SerializeField] private float activationDistance = 20f;
         [SerializeField] private float despawnBehindPlayerOffset = 5f;
 
-        [Header("Moving Speed")]
-        [Tooltip("Minimum movement speed for moving obstacles (m/s)")]
-        [SerializeField] private float minMoveSpeed = 2f;
-        [Tooltip("Maximum movement speed for moving obstacles (m/s)")]
-        [SerializeField] private float maxMoveSpeed = 5f;
+        [SerializeField] private float minMoveSpeed = 7f;
+        [SerializeField] private float maxMoveSpeed = 9f;
 
-        private WorldChunk parentChunk;
+
+        private WorldChunk _parentChunk;
         private bool isActive = true;
 
         // moving state
@@ -34,15 +32,35 @@ namespace World
         private Collider _collider;
 
         private float _moveSpeed = 0f;
+        private ObjectData _configuredObjectData;
 
         public bool IsMoving => isMoving;
 
+        /// <summary>
+        /// Configures this obstacle from an ObjectData.
+        /// </summary>
+        public void ConfigureFromObjectData(ObjectData data)
+        {
+            if (data == null) return;
+
+            _configuredObjectData = data;
+
+            damage = data.damage;
+            isMoving = data.isMoving;
+            activationDistance = data.activationDistance;
+            
+            // Always use speed from ObjectData - set it directly
+            _moveSpeed = data.speed;
+            minMoveSpeed = data.speed;
+            maxMoveSpeed = data.speed;
+        }
+
         private void Awake()
         {
-            parentChunk = GetComponentInParent<WorldChunk>();
-            if (parentChunk != null)
+            _parentChunk = GetComponentInParent<WorldChunk>();
+            if (_parentChunk != null)
             {
-                parentChunk.AddWorldObject(this);
+                _parentChunk.AddWorldObject(this);
             }
 
             _collider = GetComponent<Collider>();
@@ -54,7 +72,7 @@ namespace World
 
         private void Start()
         {
-
+            // ensure collider disabled if dormant
             if (_isDormant && _collider != null)
             {
                 _collider.enabled = false;
@@ -68,17 +86,17 @@ namespace World
             }
             else
             {
-                // if moving and not dormant, pick a random speed
-                if (!_isDormant)
+                // if moving and not dormant, ensure speed is set from configured ObjectData
+                if (!_isDormant && _configuredObjectData != null)
                 {
+                    _moveSpeed = _configuredObjectData.speed;
+                }
+                else if (!_isDormant && _moveSpeed <= 0f)
+                {
+                    // Fallback only if not configured from ObjectData
                     _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
                 }
             }
-
-            if (GameManager.Instance.NoCollisionMode)
-                _collider.enabled = false;
-            else
-                _collider.enabled = true;
         }
 
         private void Update()
@@ -102,10 +120,18 @@ namespace World
             // For moving obstacles that are active, they move opposite to world movement using their own speed
             if (isMoving && _movementActive)
             {
-                // ensure we have a valid move speed
+                // ensure we have a valid move speed - use configured ObjectData speed if available
                 if (_moveSpeed <= 0f)
                 {
-                    _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
+                    if (_configuredObjectData != null)
+                    {
+                        _moveSpeed = _configuredObjectData.speed;
+                    }
+                    else
+                    {
+                        // Fallback only if not configured from ObjectData
+                        _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
+                    }
                 }
 
                 float frameMove = _moveSpeed * Time.deltaTime;
@@ -164,17 +190,25 @@ namespace World
             }
 
             // Remove from parent chunk registration since now independent
-            if (parentChunk != null)
+            if (_parentChunk != null)
             {
-                parentChunk.RemoveWorldObject(this);
-                parentChunk = null;
+                _parentChunk.RemoveWorldObject(this);
+                _parentChunk = null;
             }
 
             _isDormant = false;
             _movementActive = true;
 
-            // pick a random speed on activation
-            _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
+            // Use speed from configured ObjectData if available, otherwise use random range
+            if (_configuredObjectData != null)
+            {
+                _moveSpeed = _configuredObjectData.speed;
+            }
+            else
+            {
+                // Fallback only if not configured from ObjectData
+                _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
+            }
         }
 
         public void SetDormant(bool dormant)
@@ -184,14 +218,23 @@ namespace World
             if (_collider == null) _collider = GetComponent<Collider>();
             if (_collider != null) _collider.enabled = !dormant;
 
-            // if set dormant, clear move speed so it will be randomized on activation
+            // if set dormant, clear move speed so it will be set from ObjectData on activation
             if (dormant)
             {
                 _moveSpeed = 0f;
             }
             else if (isMoving && _moveSpeed <= 0f)
             {
-                _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
+                // Use speed from configured ObjectData if available
+                if (_configuredObjectData != null)
+                {
+                    _moveSpeed = _configuredObjectData.speed;
+                }
+                else
+                {
+                    // Fallback only if not configured from ObjectData
+                    _moveSpeed = Random.Range(minMoveSpeed, maxMoveSpeed);
+                }
             }
         }
 
@@ -204,11 +247,24 @@ namespace World
             _movementActive = false;
             _isDormant = true;
             _moveSpeed = 0f;
-            parentChunk = null;
+            _configuredObjectData = null;
+            
+            // Clear parent chunk reference (should already be null for moving obstacles, but ensure it)
+            if (_parentChunk != null)
+            {
+                _parentChunk.RemoveWorldObject(this);
+                _parentChunk = null;
+            }
 
+            // Ensure collider is properly set up
             if (_collider == null) _collider = GetComponent<Collider>();
             if (_collider != null)
             {
+                // Ensure it's a trigger (as required by the component)
+                if (!_collider.isTrigger)
+                {
+                    _collider.isTrigger = true;
+                }
                 _collider.enabled = false;
             }
         }
@@ -239,7 +295,6 @@ namespace World
             if (GameController.Instance != null)
             {
                 GameController.Instance.GameOver();
-                UIManager.Instance.GameOverPanel?.Show();
             }
         }
 
@@ -259,18 +314,18 @@ namespace World
                 }
 
                 // if no pool, just deactivate the moving obstacle instead of destroying
-                if (parentChunk != null)
+                if (_parentChunk != null)
                 {
-                    parentChunk.RemoveWorldObject(this);
+                    _parentChunk.RemoveWorldObject(this);
                 }
 
                 gameObject.SetActive(false);
                 return;
             }
 
-            if (parentChunk != null)
+            if (_parentChunk != null)
             {
-                parentChunk.RemoveWorldObject(this);
+                _parentChunk.RemoveWorldObject(this);
             }
 
             if (destroyOnDespawn)
@@ -295,9 +350,9 @@ namespace World
 
         private void OnDestroy()
         {
-            if (parentChunk != null)
+            if (_parentChunk != null)
             {
-                parentChunk.RemoveWorldObject(this);
+                _parentChunk.RemoveWorldObject(this);
             }
         }
     }

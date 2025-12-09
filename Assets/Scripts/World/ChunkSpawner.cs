@@ -35,6 +35,12 @@ namespace World
         [Tooltip("Prefab for collectibles (cell type = Collectible).")]
         [SerializeField] private GameObject collectiblePrefab;
 
+        [Header("Object Configs")]
+        [Tooltip("ObjectConfigSO for static obstacles. If set, obstacles will be instantiated from random ObjectData in this config.")]
+        [SerializeField] private ObjectConfigSO staticObstacleConfig;
+        [Tooltip("ObjectConfigSO for jump obstacles. If set, obstacles will be instantiated from random ObjectData in this config. Falls back to staticObstacleConfig if not set.")]
+        [SerializeField] private ObjectConfigSO jumpObstacleConfig;
+
         private ChunkPool _chunkPool;
         private WorldManager worldManager;
         private List<WorldChunk> _activeChunks = new List<WorldChunk>();
@@ -153,7 +159,9 @@ namespace World
                     movingObstaclePrefab,
                     staticObstaclePrefab,
                     jumpObstaclePrefab,
-                    collectiblePrefab
+                    collectiblePrefab,
+                    staticObstacleConfig,
+                    jumpObstacleConfig
                 );
             }
 

@@ -16,7 +16,9 @@ namespace World
             GameObject movingObstaclePrefab,
             GameObject staticObstaclePrefab,
             GameObject jumpObstaclePrefab,
-            GameObject collectiblePrefab)
+            GameObject collectiblePrefab,
+            ObjectConfigSO staticObstacleConfig = null,
+            ObjectConfigSO jumpObstacleConfig = null)
         {
             if (chunk == null || worldManager == null || layout == null) return;
 
@@ -48,25 +50,66 @@ namespace World
                                 var pooled = pool.Get();
                                 if (pooled != null)
                                 {
-                                    //var parent = pool.Root != null ? pool.Root : chunk.transform;
-                                    //pooled.transform.SetParent(parent, false);
                                     pooled.transform.position = pos;
                                     pooled.transform.rotation = Quaternion.identity;
+                                    
                                     // keep it dormant until the spawner activates it
                                     pooled.SetDormant(true);
                                     // return to pool so it remains available for activation later
                                     pool.Return(pooled);
+                                    continue;
                                 }
                             }
 
                             continue;
                         case ChunkLayoutSO.CellType.Static:
-                            prefabToInstantiate = staticObstaclePrefab;
                             pos = new Vector3(x,0, chunk.StartZ + zPos);
+                            
+                            // Try to get random object from staticObstacleConfig
+                            if (staticObstacleConfig != null)
+                            {
+                                var objectData = staticObstacleConfig.GetRandomObject();
+                                if (objectData != null && objectData.objectPrefab != null)
+                                {
+                                    prefabToInstantiate = objectData.objectPrefab;
+                                    // Store objectData for configuration after instantiation
+                                    var instantiated = Object.Instantiate(prefabToInstantiate, pos, Quaternion.identity, chunk.transform);
+                                    var obstacle = instantiated?.GetComponent<WorldObstacle>();
+                                    if (obstacle != null)
+                                    {
+                                        obstacle.ConfigureFromObjectData(objectData);
+                                    }
+                                    continue;
+                                }
+                            }
+                            
+                            // Fallback to staticObstaclePrefab if config not available
+                            prefabToInstantiate = staticObstaclePrefab;
                             break;
                         case ChunkLayoutSO.CellType.Jump:
-                            prefabToInstantiate = jumpObstaclePrefab ?? staticObstaclePrefab;
                             pos = new Vector3(x,0, chunk.StartZ + zPos);
+                            
+                            // Try to get random object from jumpObstacleConfig first, then fallback to staticObstacleConfig
+                            ObjectConfigSO configToUse = jumpObstacleConfig ?? staticObstacleConfig;
+                            if (configToUse != null)
+                            {
+                                var objectData = configToUse.GetRandomObject();
+                                if (objectData != null && objectData.objectPrefab != null)
+                                {
+                                    prefabToInstantiate = objectData.objectPrefab;
+                                    // Store objectData for configuration after instantiation
+                                    var instantiated = Object.Instantiate(prefabToInstantiate, pos, Quaternion.identity, chunk.transform);
+                                    var obstacle = instantiated?.GetComponent<WorldObstacle>();
+                                    if (obstacle != null)
+                                    {
+                                        obstacle.ConfigureFromObjectData(objectData);
+                                    }
+                                    continue;
+                                }
+                            }
+                            
+                            // Fallback to jumpObstaclePrefab or staticObstaclePrefab
+                            prefabToInstantiate = jumpObstaclePrefab ?? staticObstaclePrefab;
                             break;
                         case ChunkLayoutSO.CellType.Collectible:
                             prefabToInstantiate = collectiblePrefab;

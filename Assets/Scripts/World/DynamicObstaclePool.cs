@@ -14,6 +14,7 @@ namespace World
         [SerializeField] private int initialSize = 10;
         [SerializeField] private int maxSize = 50;
         [SerializeField] private WorldMover World;
+        [SerializeField] private ObjectConfigSO dynamicObstacleConfig;
 
         private readonly Queue<WorldObstacle> _pool = new Queue<WorldObstacle>();
         private readonly HashSet<WorldObstacle> _active = new HashSet<WorldObstacle>();
@@ -62,12 +63,14 @@ namespace World
 
         private WorldObstacle CreateNewInstance()
         {
-            var go = Instantiate(prefab, _root);
+            ObjectData objectData = dynamicObstacleConfig?.GetRandomObject();
+            var go = Instantiate(objectData.objectPrefab, _root);
             var comp = go.GetComponent<WorldObstacle>();
             if (comp == null)
             {
                 Debug.LogError("DynamicObstaclePool: prefab does not contain WorldObstacle component");
             }
+            comp.ConfigureFromObjectData(objectData);
             go.SetActive(false);
             return comp;
         }
@@ -99,10 +102,13 @@ namespace World
                 _active.Add(item);
             }
 
-            if (GameManager.Instance.NoCollisionMode)
-                item.GetComponent<Collider>().enabled = false;
-            else
-                item.GetComponent<Collider>().enabled = true;
+            if (item != null)
+            {
+                if (GameManager.Instance.NoCollisionMode)
+                    item.GetComponent<Collider>().enabled = false;
+                else
+                    item.GetComponent<Collider>().enabled = true;
+            }
 
             return item;
         }

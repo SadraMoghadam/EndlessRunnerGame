@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc660e60023c33a47b783b87119f9eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
-  destroyOnDespawn: 1
+  destroyOnDespawn: 0
   damage: 1
   isMoving: 0
   activationDistance: 20
