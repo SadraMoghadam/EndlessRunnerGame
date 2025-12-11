@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 42b54f36cbc434c4d8ef6620e121113a, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -2023,6 +2023,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 030e976bc2dd9564c9619f98c793b325, type: 2}
+    - target: {fileID: 5197129864323979436, guid: 649b95866c2d0af4cab90976f6b73378, type: 3}
+      propertyPath: field of view
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 6669171630128160903, guid: 649b95866c2d0af4cab90976f6b73378, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2102,7 +2106,7 @@ PrefabInstance:
       objectReference: {fileID: 2020480645}
     - target: {fileID: 2541140217636960761, guid: f7b7dfd04ce576b45853a54bd3a32122, type: 3}
       propertyPath: m_VersionIndex
-      value: 1158
+      value: 1767
       objectReference: {fileID: 0}
     - target: {fileID: 2914993207666100830, guid: f7b7dfd04ce576b45853a54bd3a32122, type: 3}
       propertyPath: m_Mesh
