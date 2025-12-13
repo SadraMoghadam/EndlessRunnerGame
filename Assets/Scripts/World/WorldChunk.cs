@@ -14,6 +14,14 @@ namespace World
         private readonly List<IWorldObject> _worldObjects = new List<IWorldObject>();
         private float _currentZPosition;
         private bool _isActive = false;
+        private Dictionary<Transform, Vector3> _originalObstaclePositions = new Dictionary<Transform, Vector3>();
+        private GameObject _sourcePrefab;
+        
+        public GameObject SourcePrefab
+        {
+            get => _sourcePrefab;
+            set => _sourcePrefab = value;
+        }
         
         public float ChunkLength => chunkLength;
         public float StartZ => _currentZPosition;
@@ -45,6 +53,22 @@ namespace World
             transform.position = new Vector3(0, 0, zPosition);
             _isActive = true;
             gameObject.SetActive(true);
+            
+            // Store original positions of all obstacles (including dynamic ones that move)
+            StoreOriginalObstaclePositions();
+        }
+        
+        private void StoreOriginalObstaclePositions()
+        {
+            _originalObstaclePositions.Clear();
+            WorldObstacle[] obstacles = GetComponentsInChildren<WorldObstacle>(true);
+            foreach (WorldObstacle obstacle in obstacles)
+            {
+                if (obstacle != null && obstacle.transform != null)
+                {
+                    _originalObstaclePositions[obstacle.transform] = obstacle.transform.localPosition;
+                }
+            }
         }
         
         public void MoveChunk(float deltaMovement)
@@ -59,16 +83,12 @@ namespace World
             {
                 if (worldObject == null) continue;
 
-                // Try cast to Component to inspect transform parentage
                 var comp = worldObject as Component;
                 if (comp != null)
                 {
-                    // If the object is still a child of this chunk, the hierarchy movement already moved it
                     if (comp.transform.IsChildOf(transform))
                         continue;
                 }
-
-                worldObject.MoveWithWorld();
             }
         }
         
@@ -94,21 +114,25 @@ namespace World
         {
             _isActive = false;
 
-            // Make a copy because calling OnDespawn may remove the object from the original list,
-            // which would modify the collection during enumeration and throw InvalidOperationException.
             var objectsCopy = _worldObjects.ToArray();
-
-            foreach (var worldObject in objectsCopy)
-            {
-                if (worldObject != null)
-                {
-                    worldObject.OnDespawn();
-                }
-            }
 
             _worldObjects.Clear();
             
+            // Reset all obstacles to their original positions
+            ResetObstaclePositions();
+            
             gameObject.SetActive(false);
+        }
+        
+        private void ResetObstaclePositions()
+        {
+            foreach (var kvp in _originalObstaclePositions)
+            {
+                if (kvp.Key != null)
+                {
+                    kvp.Key.localPosition = kvp.Value;
+                }
+            }
         }
         
         private void OnDrawGizmos()

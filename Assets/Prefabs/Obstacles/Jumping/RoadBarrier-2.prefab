@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1.7, y: 1.2, z: 1.2}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -111,7 +111,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.8237894, y: 0.74521166, z: 0.5495558}
+  m_Size: {x: 1.7, y: 0.66, z: 0.29}
   m_Center: {x: 0, y: 0.37481567, z: 0.000000044703484}
 --- !u!114 &-1503004318557656677
 MonoBehaviour:
@@ -127,11 +127,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 0
   damage: 1
-  isMoving: 0
-  activationDistance: 20
-  despawnBehindPlayerOffset: 5
-  minMoveSpeed: 2
-  maxMoveSpeed: 5
 --- !u!54 &-7394921453170596447
 Rigidbody:
   m_ObjectHideFlags: 0

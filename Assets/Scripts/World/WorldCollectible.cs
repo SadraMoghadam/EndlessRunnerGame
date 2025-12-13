@@ -34,8 +34,6 @@ namespace World
         public void MoveWithWorld()
         {
             return;
-            //if (!_isActive) return;
-            //transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - deltaMovement);
         }
         
         public void OnDespawn()
@@ -86,6 +84,25 @@ namespace World
             if (_parentChunk != null)
             {
                 _parentChunk.RemoveWorldObject(this);
+            }
+        }
+
+        private void Reset()
+        {
+            _isActive = true;
+
+            if (_parentChunk != null)
+            {
+                _parentChunk.RemoveWorldObject(this);
+            }
+
+            if (destroyOnDespawn)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                gameObject.SetActive(false);
             }
         }
     }

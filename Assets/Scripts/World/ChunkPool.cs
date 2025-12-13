@@ -97,33 +97,18 @@ namespace World
             WorldChunk chunk = Instantiate(chunkComponent, transform);
             chunk.gameObject.SetActive(false);
             chunk.name = $"{prefab.name}_Instance_{pool.allChunks.Count}";
+            // Store the source prefab reference for easy lookup later
+            chunk.SourcePrefab = prefab;
             pool.allChunks.Add(chunk);
             return chunk;
         }
 
         private GameObject GetSourcePrefab(WorldChunk chunk)
         {
-            // Try to get the prefab from ChunkLayoutReference
-            var layoutRef = chunk.GetComponent<ChunkLayoutReference>();
-            if (layoutRef != null && layoutRef.layout != null && layoutRef.layout.chunkPrefab != null)
+            // First, try to get from stored source prefab reference (most reliable)
+            if (chunk.SourcePrefab != null)
             {
-                return layoutRef.layout.chunkPrefab;
-            }
-
-            // Fallback: try to find the prefab by matching name (less reliable)
-            // This is a fallback in case ChunkLayoutReference is not set
-            string chunkName = chunk.name;
-            if (chunkName.Contains("_Instance_"))
-            {
-                string prefabName = chunkName.Substring(0, chunkName.IndexOf("_Instance_"));
-                // Try to find in pools
-                foreach (var kvp in _pools)
-                {
-                    if (kvp.Key.name == prefabName)
-                    {
-                        return kvp.Key;
-                    }
-                }
+                return chunk.SourcePrefab;
             }
 
             return null;

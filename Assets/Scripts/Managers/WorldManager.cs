@@ -90,11 +90,6 @@ namespace Managers
             {
                 chunkSpawner.DespawnAllChunks();
             }
-
-            if (DynamicObstaclePool.Instance != null)
-            {
-                DynamicObstaclePool.Instance.ReturnAll();
-            }
         }
 
         private IEnumerator ResetWorldProcess()

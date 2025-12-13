@@ -74,10 +74,6 @@ public class GameController : MonoBehaviour
         SetHealth(currentHealth);
         SaveProgress();
         IsGameOver = true;
-        if (DynamicObstaclePool.Instance != null)
-        {
-            DynamicObstaclePool.Instance.ReturnAll();
-        }
         WorldManager.PauseWorld();
     }
 

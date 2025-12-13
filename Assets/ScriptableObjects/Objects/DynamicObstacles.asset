@@ -15,31 +15,22 @@ MonoBehaviour:
   objectConfigs:
   - objectName: Car1
     objectPrefab: {fileID: 5600738816234043202, guid: fe65ef411c81c294c8626620ad865e2b, type: 3}
-    speed: 7.5
+    speed: 9
     damage: 1
-    isMoving: 1
-    activationDistance: 40
   - objectName: Car2
     objectPrefab: {fileID: 1307894021578196576, guid: 18ea9ddf0ae7e0e438e5cf2769fd9f6e, type: 3}
     speed: 8
     damage: 1
-    isMoving: 1
-    activationDistance: 40
   - objectName: Car3
     objectPrefab: {fileID: 733145288075614299, guid: c592e26c4b515a84f88454f14b253a2b, type: 3}
     speed: 8
     damage: 1
-    isMoving: 1
-    activationDistance: 40
   - objectName: Truck1
     objectPrefab: {fileID: 441435406793882414, guid: 9331a1095e0f1d445afacaef43204327, type: 3}
-    speed: 9
+    speed: 7
     damage: 2
-    isMoving: 1
-    activationDistance: 40
   - objectName: Scooter
     objectPrefab: {fileID: 1185618691367201325, guid: 2360469b2b9560a4e90b479ceaa8ed8b, type: 3}
-    speed: 9
+    speed: 7
     damage: 1
-    isMoving: 1
-    activationDistance: 40
+  isMoving: 1

@@ -1,11 +1,11 @@
 // LEGACY CODE
 
-using UnityEngine;
+//using UnityEngine;
 
-namespace World
-{
-    public class ChunkLayoutReference : MonoBehaviour
-    {
-        public ChunkLayoutSO layout;
-    }
-}
+//namespace World
+//{
+//    public class ChunkLayoutReference : MonoBehaviour
+//    {
+//        public ChunkLayoutSO layout;
+//    }
+//}
