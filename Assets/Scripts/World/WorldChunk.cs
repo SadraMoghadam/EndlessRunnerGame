@@ -8,11 +8,9 @@ namespace World
     {
         [Header("Chunk Settings")]
         [SerializeField] private float chunkLength = 20f;
-        [SerializeField] private Transform chunkStartPoint;
-        [SerializeField] private Transform chunkEndPoint;
-        [SerializeField] private Difficulty chunkLevel;
-        
 
+        private Transform chunkStartPoint;
+        private Transform chunkEndPoint;
         private readonly List<IWorldObject> _worldObjects = new List<IWorldObject>();
         private float _currentZPosition;
         private bool _isActive = false;

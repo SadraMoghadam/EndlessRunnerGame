@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ccc18afb8ad7d042a78a812ec301284, type: 3}
+  m_Name: EasyChunk1
+  m_EditorClassIdentifier: Assembly-CSharp::World.ChunkLayoutSO
+  difficulty: 0
+  chunkPrefab: {fileID: 9211397337327938777, guid: 60de921bfce5b6d4d9d2502c12fa6af1, type: 3}
+  lanes: 3

@@ -17,7 +17,6 @@ namespace World
         [SerializeField] private bool isMoving = false;
         [Tooltip("Distance (meters) from player at which this moving obstacle will start moving (and detach from its chunk).")]
         [SerializeField] private float activationDistance = 20f;
-        [SerializeField] private float despawnBehindPlayerOffset = 5f;
 
         [SerializeField] private float minMoveSpeed = 7f;
         [SerializeField] private float maxMoveSpeed = 9f;
@@ -36,9 +35,6 @@ namespace World
 
         public bool IsMoving => isMoving;
 
-        /// <summary>
-        /// Configures this obstacle from an ObjectData.
-        /// </summary>
         public void ConfigureFromObjectData(ObjectData data)
         {
             if (data == null) return;
@@ -68,6 +64,7 @@ namespace World
             {
                 _collider.isTrigger = true;
             }
+            ConfigureFromObjectData(_configuredObjectData);
         }
 
         private void Start()
@@ -137,65 +134,11 @@ namespace World
                 float frameMove = _moveSpeed * Time.deltaTime;
                 transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - frameMove);
 
-                var player = GameController.Instance?.PlayerController;
-                if (player != null && transform.position.z < player.transform.position.z - despawnBehindPlayerOffset)
-                {
-                    OnDespawn();
-                }
             }
         }
 
         private void ActivateMovement()
         {
-            // enable collider
-            if (_collider != null) _collider.enabled = true;
-
-            // Detach from chunk so chunk movement no longer affects this object
-            // Parent under a scene-level World/DynamicObstacles folder so moving obstacles live inside the world hierarchy
-            const string worldName = "World";
-            const string folderName = "DynamicObstacles";
-
-            GameObject worldRoot = GameObject.Find(worldName);
-            if (worldRoot == null || (worldRoot.scene != null && worldRoot.scene.name == "DontDestroyOnLoad"))
-            {
-                var activeScene = SceneManager.GetActiveScene();
-                if (activeScene.IsValid())
-                {
-                    worldRoot = new GameObject(worldName);
-                    SceneManager.MoveGameObjectToScene(worldRoot, activeScene);
-                }
-            }
-
-            Transform targetFolder = null;
-            if (worldRoot != null)
-            {
-                targetFolder = worldRoot.transform.Find(folderName);
-                if (targetFolder == null)
-                {
-                    var folderGo = new GameObject(folderName);
-                    folderGo.transform.SetParent(worldRoot.transform, false);
-                    SceneManager.MoveGameObjectToScene(folderGo, worldRoot.scene);
-                    targetFolder = folderGo.transform;
-                }
-            }
-
-            if (targetFolder != null)
-            {
-                transform.SetParent(targetFolder, false);
-            }
-            else
-            {
-                // fallback to no parent
-                transform.SetParent(null);
-            }
-
-            // Remove from parent chunk registration since now independent
-            if (_parentChunk != null)
-            {
-                _parentChunk.RemoveWorldObject(this);
-                _parentChunk = null;
-            }
-
             _isDormant = false;
             _movementActive = true;
 
@@ -238,9 +181,6 @@ namespace World
             }
         }
 
-        /// <summary>
-        /// Resets the obstacle to its initial state so it can be reused from the pool.
-        /// </summary>
         public void Reset()
         {
             isActive = true;
