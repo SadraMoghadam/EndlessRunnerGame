@@ -87,6 +87,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EarthRadius: -400
+    - _Feather: 0
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
@@ -96,6 +97,7 @@ Material:
     - _Parallax: 0.02
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Radius: 2
     - _SideBendStrength: 0
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0

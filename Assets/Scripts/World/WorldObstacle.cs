@@ -83,6 +83,11 @@ namespace World
             }
         }
 
+        public void ResetMoving()
+        {
+            _isMoving = false;
+        }
+
         public void OnDespawn()
         {
             isActive = false;

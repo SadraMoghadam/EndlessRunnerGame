@@ -2,10 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
 using World;
+using static UnityEngine.Rendering.DebugUI;
 
 // Simple player controller that can move only on three lanes (Left, Center, Right)
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private GameObject _playerModel;
+
     [Header("Movement")]
     [SerializeField] private float laneChangeSpeed = 10f;
 
@@ -15,11 +18,13 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Gravity applied to the player (negative value). Tune to change fall speed.")]
     [SerializeField] private float gravity = -20f;
 
+
     private readonly float[] _lanePositions = new float[3];
     private int _currentLaneIndex = 1; //0 = Left,1 = Center,2 = Right
 
     private Vector3 _targetPosition;
     private GameController _gameController;
+    private Animator _animator;
 
     // jumping state
     private float _verticalVelocity = 0f;
@@ -29,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         _gameController = GameController.Instance;
- 
+
         // initialize lane positions from serialized values
         _lanePositions[0] = _gameController.WorldManager.GetLaneXPosition(LaneNumber.Left);
         _lanePositions[1] = _gameController.WorldManager.GetLaneXPosition(LaneNumber.Center);
@@ -45,6 +50,7 @@ public class PlayerController : MonoBehaviour
         _groundY = transform.position.y;
         _isGrounded = true;
         _verticalVelocity = 0f;
+        _animator = _playerModel.GetComponent<Animator>();
     }
 
     private void Update()
@@ -54,6 +60,8 @@ public class PlayerController : MonoBehaviour
         HandleInput();
         SmoothMoveToTargetLane();
         ApplyGravityAndJump();
+        Vector2 normalPos = NormalizePosition();
+        SetAnimatorXY(normalPos.x, normalPos.y);
     }
 
     private void HandleInput()
@@ -77,6 +85,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void SetAnimatorXY(float x, float y)
+    {
+        if (_animator != null)
+        {
+            _animator.SetFloat("MoveX", x);
+            _animator.SetFloat("MoveY", y);
+        }
+    }
+
+    private Vector2 NormalizePosition()
+    {
+        float normalizedx = Mathf.Clamp(transform.position.x / _lanePositions[2], -1f, 1f);
+        float maxJumpHeight = (jumpVelocity * jumpVelocity) / (2 * Mathf.Abs(gravity));
+        float normalizedy = Mathf.Clamp((transform.position.y - _groundY) / maxJumpHeight, -1f, 1f);
+
+        return new Vector2(normalizedx, normalizedy);
+    }
+
     private void TryChangeLane(int direction)
     {
         int desired = Mathf.Clamp(_currentLaneIndex + direction, 0, 2);
@@ -97,6 +123,10 @@ public class PlayerController : MonoBehaviour
 
     private void TryJump()
     {
+        // Prevent jumping while moving left or right
+        if (Mathf.Abs(transform.position.x - _targetPosition.x) > 0.01f)
+            return;
+        
         if (_isGrounded)
         {
             _verticalVelocity = jumpVelocity;

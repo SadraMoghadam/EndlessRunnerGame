@@ -132,6 +132,7 @@ namespace World
                 {
                     kvp.Key.localPosition = kvp.Value;
                 }
+                kvp.Key.GetComponent<WorldObstacle>()?.ResetMoving();
             }
         }
         
@@ -145,14 +146,18 @@ namespace World
                     new Vector3(10, 1, chunkLength)
                 );
                 
-                Gizmos.color = Color.yellow;
-                Vector3 start = transform.position;
-                Vector3 end = transform.position + new Vector3(0, 0, chunkLength);
-                
-                WorldManager worldManager = GameController.Instance.WorldManager;
-                Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0));
-                Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0));
-                Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0));
+                // Only draw lane lines if GameController and WorldManager are available (runtime only)
+                if (GameController.Instance != null && GameController.Instance.WorldManager != null)
+                {
+                    Gizmos.color = Color.yellow;
+                    Vector3 start = transform.position;
+                    Vector3 end = transform.position + new Vector3(0, 0, chunkLength);
+                    
+                    WorldManager worldManager = GameController.Instance.WorldManager;
+                    Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Left), 0, 0));
+                    Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Center), 0, 0));
+                    Gizmos.DrawLine(start + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0), end + new Vector3(worldManager.GetLaneXPosition(LaneNumber.Right), 0, 0));
+                }
             }
         }
     }

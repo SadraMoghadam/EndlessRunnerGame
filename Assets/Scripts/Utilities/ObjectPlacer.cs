@@ -1,4 +1,3 @@
-using UnityEditor.Rendering;
 using UnityEngine;
 using World;
 
@@ -7,6 +6,12 @@ public class ObjectPlacer : MonoBehaviour
 
     [SerializeField] private ObjectsContainerSO objectsContainer;
     [SerializeField] private float speed;
+    [SerializeField] private bool randomRotation = false;
+    [SerializeField] private float minRotation = 0;
+    [SerializeField] private float maxRotation = 360;
+    [SerializeField] private bool randomScale = false;
+    [SerializeField] private float minScale = 1;
+    [SerializeField] private float maxScale = 1.5f;
     private ObjectData _currentObjectData;
     private GameObject _currentObject;
 
@@ -15,22 +20,57 @@ public class ObjectPlacer : MonoBehaviour
     {
         if (_currentObjectData != null)
             return;
-        GetComponent<Renderer>().enabled = false;
+            
+        var renderer = GetComponent<Renderer>();
+        if (renderer != null)
+            renderer.enabled = false;
+            
+        if (objectsContainer == null)
+        {
+            Debug.LogError("ObjectPlacer: objectsContainer is not assigned!", this);
+            return;
+        }
+        
         if (speed == 0)
         {
             _currentObjectData = objectsContainer.GetRandomObject();
+            if (_currentObjectData == null || _currentObjectData.objectPrefab == null)
+            {
+                Debug.LogWarning("ObjectPlacer: Could not get valid object data or prefab is null!", this);
+                return;
+            }
+            
             _currentObject = Instantiate(_currentObjectData.objectPrefab, transform.position, Quaternion.identity, transform);
+            if (_currentObject == null)
+            {
+                Debug.LogError("ObjectPlacer: Failed to instantiate object!", this);
+                return;
+            }
+            
+            if (randomRotation)
+            {
+                float randomYRotation = Random.Range(minRotation, maxRotation);
+                _currentObject.transform.Rotate(0, randomYRotation, 0);
+            }
+            if (randomScale)
+            {
+                float randomScaleValue = Random.Range(minScale, maxScale);
+                _currentObject.transform.localScale = new Vector3(randomScaleValue, randomScaleValue, randomScaleValue);
+            }
         }
         else
         {
             _currentObjectData = objectsContainer.GetRandomObjectBySpeed(speed);
-            if (_currentObjectData.objectPrefab != null &&
+            if (_currentObjectData != null && 
+                _currentObjectData.objectPrefab != null &&
                 _currentObjectData.objectPrefab.GetComponent<WorldObstacle>() != null)
             {
                 _currentObject = Instantiate(_currentObjectData.objectPrefab, transform.position, Quaternion.identity, transform);
-                _currentObject.GetComponent<WorldObstacle>().ConfigureFromObjectData(_currentObjectData);
+                if (_currentObject != null)
+                {
+                    _currentObject.GetComponent<WorldObstacle>().ConfigureFromObjectData(_currentObjectData);
+                }
             }
-
         }
     }
 }

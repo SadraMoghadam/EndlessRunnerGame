@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c614b7924ab27f46a021b9f4824c9ec, type: 3}
+  m_Name: Trees
+  m_EditorClassIdentifier: Assembly-CSharp::World.ObjectsContainerSO
+  objectConfigs:
+  - objectName: Tree1
+    objectPrefab: {fileID: 3489192851198715285, guid: 3621723b6f5c87e46a98fce265270341, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: Tree2
+    objectPrefab: {fileID: 5716472912363847415, guid: 6330c7ba2dfe8dc4094660d768326330, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: Tree3
+    objectPrefab: {fileID: 2060589233173438422, guid: 64c016588b4b8bc4480bfbb28293a2a5, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: Tree4
+    objectPrefab: {fileID: 9208280024704128269, guid: f6aeca4a873100d4f95ecd44ddaa03b2, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: Tree5
+    objectPrefab: {fileID: 2315945574744369591, guid: 12faa938f34d4b74e8fd43b23d20bf96, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: Tree6
+    objectPrefab: {fileID: 7698324677040609889, guid: c27ba2e575f0c2349ae94fb1e66bbef7, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: Tree7
+    objectPrefab: {fileID: 2613924079921196393, guid: f247f1edf403fe049a1c60ee1ba456e0, type: 3}
+    speed: 0
+    damage: 0
+  - objectName: 
+    objectPrefab: {fileID: 2613924079921196393, guid: f247f1edf403fe049a1c60ee1ba456e0, type: 3}
+    speed: 0
+    damage: 0
+  isMoving: 0

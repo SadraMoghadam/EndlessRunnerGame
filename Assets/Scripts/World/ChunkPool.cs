@@ -97,7 +97,6 @@ namespace World
             WorldChunk chunk = Instantiate(chunkComponent, transform);
             chunk.gameObject.SetActive(false);
             chunk.name = $"{prefab.name}_Instance_{pool.allChunks.Count}";
-            // Store the source prefab reference for easy lookup later
             chunk.SourcePrefab = prefab;
             pool.allChunks.Add(chunk);
             return chunk;
@@ -105,7 +104,6 @@ namespace World
 
         private GameObject GetSourcePrefab(WorldChunk chunk)
         {
-            // First, try to get from stored source prefab reference (most reliable)
             if (chunk.SourcePrefab != null)
             {
                 return chunk.SourcePrefab;
