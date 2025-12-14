@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5024295957662836757}
   - component: {fileID: 7766099452130193404}
   - component: {fileID: 1491900017303614890}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 2 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 2792160997884916858}
   - component: {fileID: 3333494863181671893}
   - component: {fileID: 5121036193547042165}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 3 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 1042487776299717872}
   - component: {fileID: 8362943500756100008}
   - component: {fileID: 3185995631662256327}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 3699470222088538650}
   - component: {fileID: 2974016847817017807}
   - component: {fileID: 6931233009134567540}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 3_1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 5255591175765463432}
   - component: {fileID: 8334455942658366168}
   - component: {fileID: 5051317468939835926}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 3_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 4781324168886380179}
   - component: {fileID: 8087352268670434406}
   - component: {fileID: 6291306865514768685}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -546,7 +546,7 @@ GameObject:
   - component: {fileID: 2503850512814779140}
   - component: {fileID: -5590882889188530525}
   - component: {fileID: 6813845195877131176}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RoadBarrier-1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -611,6 +611,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 0
   damage: 1
+  lookAheadDistance: 2
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!54 &6813845195877131176
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -649,7 +653,7 @@ GameObject:
   - component: {fileID: 2672675336814719610}
   - component: {fileID: 2992393729328346018}
   - component: {fileID: 8770777176368073436}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -738,7 +742,7 @@ GameObject:
   - component: {fileID: 4755070872041985960}
   - component: {fileID: 2299703924111155672}
   - component: {fileID: 2833609502544131845}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: layer 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

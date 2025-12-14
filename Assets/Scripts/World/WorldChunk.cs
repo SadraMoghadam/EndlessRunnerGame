@@ -8,6 +8,8 @@ namespace World
     {
         [Header("Chunk Settings")]
         [SerializeField] private float chunkLength = 20f;
+        [SerializeField] private Transform LeftLane;
+        [SerializeField] private Transform RightLane;
 
         private Transform chunkStartPoint;
         private Transform chunkEndPoint;
@@ -52,6 +54,7 @@ namespace World
             _currentZPosition = zPosition;
             transform.position = new Vector3(0, 0, zPosition);
             _isActive = true;
+            RandomizeLeftRightLanes();
             gameObject.SetActive(true);
             
             // Store original positions of all obstacles (including dynamic ones that move)
@@ -134,6 +137,22 @@ namespace World
                 }
                 kvp.Key.GetComponent<WorldObstacle>()?.ResetMoving();
             }
+        }
+
+        private void RandomizeLeftRightLanes()
+        { 
+            float r = Random.Range(0, 2);
+            if (r > 0.5)
+            {
+                if (LeftLane != null && RightLane != null)
+                {
+                    float leftX = LeftLane.localPosition.x;
+                    float rightX = RightLane.localPosition.x;
+                    LeftLane.localPosition = new Vector3(rightX, LeftLane.localPosition.y, LeftLane.localPosition.z);
+                    RightLane.localPosition = new Vector3(leftX, RightLane.localPosition.y, RightLane.localPosition.z);
+                }
+            }
+
         }
         
         private void OnDrawGizmos()

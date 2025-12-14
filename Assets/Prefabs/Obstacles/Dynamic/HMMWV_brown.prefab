@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1052317185975858351}
   - component: {fileID: 3710430368881606521}
   - component: {fileID: 42888332794094334}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: HMMWV_brown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,11 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 0
   damage: 1
-  isMoving: 1
-  activationDistance: 20
-  despawnBehindPlayerOffset: 5
-  minMoveSpeed: 7
-  maxMoveSpeed: 9
+  lookAheadDistance: 4
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &3955056959998151583
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using UnityEngine;
 using UI;
 using UnityEngine.SceneManagement;
 
+
 namespace World
 {
     [RequireComponent(typeof(Collider))]
@@ -10,6 +11,10 @@ namespace World
         [Header("Obstacle Settings")]
         [SerializeField] private bool destroyOnDespawn = false;
         [SerializeField] private float damage = 1;
+
+        [Header("Collision Detection")]
+        [SerializeField] private float lookAheadDistance = 2f;
+        [SerializeField] private LayerMask obstacleLayerMask = -1; // Check all layers by default
 
         private float activationDistance = 60f;
         private WorldChunk _parentChunk;
@@ -20,6 +25,9 @@ namespace World
         private ObjectData _configuredObjectData;
         private bool _isMoving;
         private bool _isDynamic;
+        private bool _isBlocked = false;
+
+        // Formula = _moveSpeed * (activationDistance / (worldSpeed - _moveSpeed))
 
         public void ConfigureFromObjectData(ObjectData data)
         {
@@ -63,11 +71,56 @@ namespace World
                         _isMoving = true;
                     }
                 }
+
+                // Check for obstacles in front before moving
+                if (_isMoving && !_isBlocked)
+                {
+                    _isBlocked = CheckForObstacleInFront();
+                    if (!_isBlocked)
+                    {
+                        MoveWithWorld();
+                    }
+                }
             }
-            if (_isMoving)
+        }
+
+        private bool CheckForObstacleInFront()
+        {
+            Vector3 origin = transform.position + new Vector3(0, 0.5f, 0);
+            Vector3 direction = Vector3.forward;
+            
+            // Use Raycast to detect obstacles in front (single line cast)
+            RaycastHit hit;
+            bool hasHit = Physics.Raycast(
+                origin,
+                direction,
+                out hit,
+                lookAheadDistance,
+                obstacleLayerMask
+            );
+
+            if (hasHit)
             {
-                MoveWithWorld();
+                if (hit.collider.gameObject == gameObject)
+                {
+                    return false;
+                }
+
+                // Check if it's another obstacle (static or dynamic)
+                WorldObstacle otherObstacle = hit.collider.GetComponent<WorldObstacle>();
+                if (otherObstacle != null)
+                {
+                    return true;
+                }
+
+                // Also check for any collider that's not a trigger (static obstacles)
+                if (!hit.collider.isTrigger)
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public void MoveWithWorld()
@@ -86,6 +139,7 @@ namespace World
         public void ResetMoving()
         {
             _isMoving = false;
+            _isBlocked = false;
         }
 
         public void OnDespawn()

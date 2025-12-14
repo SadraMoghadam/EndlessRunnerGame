@@ -7,7 +7,6 @@ namespace World
     {
         [Header("Movement Settings")]
         [SerializeField] private float baseSpeed = 10f;
-        [SerializeField] private float speedMultiplier = 1f;
         [SerializeField] private bool useAcceleration = true;
         [SerializeField] private float accelerationRate = 0.1f;
         [SerializeField] private float maxSpeed = 30f;
@@ -17,26 +16,15 @@ namespace World
         
         public float CurrentSpeed => _currentSpeed;
         public float BaseSpeed => baseSpeed;
-        public float SpeedMultiplier 
-        { 
-            get => speedMultiplier; 
-            set => speedMultiplier = Mathf.Clamp(value, 0f, 5f); 
-        }
         public float TotalDistanceTraveled => _totalDistanceTraveled;
-        private float _defaultSpeedMultiplier;
 
         private void Awake()
         {
             _currentSpeed = baseSpeed;
-            _defaultSpeedMultiplier = speedMultiplier;
         }
 
         private void Start()
         {
-            if (speedMultiplier <= 0f)
-            {
-                speedMultiplier = 1f;
-            }
 
             _currentSpeed = baseSpeed;
         }
@@ -44,7 +32,7 @@ namespace World
         private void Update()
         {
             float deltaTime = Time.deltaTime;
-            float movement = _currentSpeed * speedMultiplier * deltaTime;
+            float movement = _currentSpeed * deltaTime;
             
             _totalDistanceTraveled += movement;
             
@@ -56,7 +44,7 @@ namespace World
         
         public float GetMovementDelta()
         {
-            return _currentSpeed * speedMultiplier * Time.deltaTime;
+            return _currentSpeed * Time.deltaTime;
         }
         
         public void SetSpeed(float speed)
@@ -73,17 +61,17 @@ namespace World
         
         public void Pause()
         {
-            speedMultiplier = 0f;
+            _currentSpeed = 0f;
         }
         
         public void Resume()
         {
-            if (speedMultiplier <= 0f) speedMultiplier = _defaultSpeedMultiplier;
+            if (_currentSpeed <= 0f) _currentSpeed = baseSpeed;
         }
 
         public void Reverse()
         {
-            speedMultiplier = -1 * _defaultSpeedMultiplier * 2;
+            _currentSpeed = -1 * baseSpeed * 2;
         }
     }
 }

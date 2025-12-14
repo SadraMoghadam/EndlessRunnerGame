@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5176297494416129137}
   - component: {fileID: 1162605186836248776}
   - component: {fileID: 3485804067736139505}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: truck_car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,11 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 0
   damage: 1
-  isMoving: 1
-  activationDistance: 20
-  despawnBehindPlayerOffset: 5
-  minMoveSpeed: 7
-  maxMoveSpeed: 9
+  lookAheadDistance: 4
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &680068800717296856
 GameObject:
   m_ObjectHideFlags: 0

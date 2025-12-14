@@ -58,14 +58,6 @@ namespace Managers
             }
         }
         
-        public void SetSpeedMultiplier(float multiplier)
-        {
-            if (worldMover != null)
-            {
-                worldMover.SpeedMultiplier = multiplier;
-            }
-        }
-        
         public void PauseWorld()
         {
             if (worldMover != null)

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 564390512171207157}
   - component: {fileID: 2411310586494978696}
   - component: {fileID: 6565412196145345772}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: scooter_green
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,11 +99,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldObstacle
   destroyOnDespawn: 0
   damage: 1
-  isMoving: 1
-  activationDistance: 20
-  despawnBehindPlayerOffset: 5
-  minMoveSpeed: 7
-  maxMoveSpeed: 9
+  lookAheadDistance: 3
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1621919451409127869
 GameObject:
   m_ObjectHideFlags: 0

@@ -13182,6 +13182,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldChunk
   chunkLength: 100
+  LeftLane: {fileID: 8168875678994053886}
+  RightLane: {fileID: 5511009586701802900}
 --- !u!1001 &285772443878679498
 PrefabInstance:
   m_ObjectHideFlags: 0
