@@ -1,4 +1,5 @@
 using Managers;
+using Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,18 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private bool _noCollisionMode = true;
     public bool NoCollisionMode => _noCollisionMode;
+
+    [SerializeField] private PlayableObjectsSO _playableObjectsSO;
+    public PlayableObjectsSO PlayableObjectsSO => _playableObjectsSO;
+
+    public enum GameState
+    {
+        MainMenu,
+        Playing,
+        Paused,
+        GameOver
+    }
+
 
     public static GameManager Instance { get; private set; }
     private readonly int _defaultHealth = 3;

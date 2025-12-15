@@ -1,3 +1,4 @@
+using Player;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -7,7 +8,7 @@ using static UnityEngine.Rendering.DebugUI;
 // Simple player controller that can move only on three lanes (Left, Center, Right)
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private GameObject _playerModel;
+    [SerializeField] PlayableObjectName playableObjectName = PlayableObjectName.Skateboard;
 
     [Header("Movement")]
     [SerializeField] private float laneChangeSpeed = 10f;
@@ -18,13 +19,25 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Gravity applied to the player (negative value). Tune to change fall speed.")]
     [SerializeField] private float gravity = -20f;
 
+    private int _playerHealth = 1;
+    public int PlayerHealth
+    {
+        get => _playerHealth;
+        set => _playerHealth = Mathf.Max(0, value);
+    }
+
 
     private readonly float[] _lanePositions = new float[3];
     private int _currentLaneIndex = 1; //0 = Left,1 = Center,2 = Right
 
     private Vector3 _targetPosition;
     private GameController _gameController;
+    private GameManager _gameManager;
     private Animator _animator;
+    private PlayableObjectData _playerData;
+    private GameObject _playerModel;
+
+    public PlayableObjectData PlayerData => _playerData;
 
     // jumping state
     private float _verticalVelocity = 0f;
@@ -33,7 +46,14 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _gameManager = GameManager.Instance;
         _gameController = GameController.Instance;
+
+        _playerData = _gameManager.PlayableObjectsSO.GetPlayableObjectDataByName(playableObjectName);
+        _playerModel = _playerData.prefab;
+        _playerHealth = _playerData.health;
+        _gameController.WorldManager.SetWorldSpeed(_playerData.speed);
+        _playerModel = Instantiate(_playerModel, transform);
 
         // initialize lane positions from serialized values
         _lanePositions[0] = _gameController.WorldManager.GetLaneXPosition(LaneNumber.Left);
@@ -179,6 +199,6 @@ public class PlayerController : MonoBehaviour
 
     public void SetColliderEnabled(bool enabled)
     {
-        transform.GetComponent<Collider>().enabled = enabled;
+        _playerModel.GetComponent<Collider>().enabled = enabled;
     }
 }

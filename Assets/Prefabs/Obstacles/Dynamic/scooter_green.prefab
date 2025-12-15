@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 564390512171207157}
   - component: {fileID: 2411310586494978696}
   - component: {fileID: 6565412196145345772}
+  - component: {fileID: 5353944280924143043}
   m_Layer: 6
   m_Name: scooter_green
   m_TagString: Untagged
@@ -103,6 +104,22 @@ MonoBehaviour:
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &5353944280924143043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185618691367201325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63630e184a8be4d4796667c2bc571fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WheelsRotator
+  wheels:
+  - {fileID: 5978672798013155655}
+  - {fileID: 6454730616297933284}
+  rotationSpeed: 360
 --- !u!1 &1621919451409127869
 GameObject:
   m_ObjectHideFlags: 0

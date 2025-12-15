@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5176297494416129137}
   - component: {fileID: 1162605186836248776}
   - component: {fileID: 3485804067736139505}
+  - component: {fileID: 4053027697508384228}
   m_Layer: 6
   m_Name: truck_car
   m_TagString: Untagged
@@ -105,6 +106,24 @@ MonoBehaviour:
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &4053027697508384228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441435406793882414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63630e184a8be4d4796667c2bc571fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WheelsRotator
+  wheels:
+  - {fileID: 665664393176672879}
+  - {fileID: 2668321560107210683}
+  - {fileID: 3293915993654016656}
+  - {fileID: 3303335867047610467}
+  rotationSpeed: 360
 --- !u!1 &680068800717296856
 GameObject:
   m_ObjectHideFlags: 0

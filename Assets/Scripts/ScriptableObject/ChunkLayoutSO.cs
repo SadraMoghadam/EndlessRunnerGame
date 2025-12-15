@@ -1,5 +1,3 @@
-// LEGACY CODE
-
 using UnityEngine;
 
 namespace World

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 854141598158914551}
   - component: {fileID: 853288227901147721}
   - component: {fileID: 4040808993409948035}
+  - component: {fileID: 4257400998368718859}
   m_Layer: 6
   m_Name: police_car
   m_TagString: Untagged
@@ -105,6 +106,24 @@ MonoBehaviour:
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &4257400998368718859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733145288075614299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63630e184a8be4d4796667c2bc571fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WheelsRotator
+  wheels:
+  - {fileID: 4272792956311761587}
+  - {fileID: 786982183823823025}
+  - {fileID: 3471210481580706858}
+  - {fileID: 4023726046318105620}
+  rotationSpeed: 360
 --- !u!1 &2680454997666680443
 GameObject:
   m_ObjectHideFlags: 0

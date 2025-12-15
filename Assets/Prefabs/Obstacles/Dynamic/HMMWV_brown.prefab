@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1052317185975858351}
   - component: {fileID: 3710430368881606521}
   - component: {fileID: 42888332794094334}
+  - component: {fileID: 2292657242501584711}
   m_Layer: 6
   m_Name: HMMWV_brown
   m_TagString: Untagged
@@ -105,6 +106,23 @@ MonoBehaviour:
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &2292657242501584711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307894021578196576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63630e184a8be4d4796667c2bc571fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WheelsRotator
+  wheels:
+  - {fileID: 3466672317849478195}
+  - {fileID: 495046511336582437}
+  - {fileID: 8063878770603128621}
+  rotationSpeed: 360
 --- !u!1 &3955056959998151583
 GameObject:
   m_ObjectHideFlags: 0
