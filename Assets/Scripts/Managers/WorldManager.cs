@@ -64,13 +64,58 @@ namespace Managers
             {
                 worldMover.Pause();
             }
+            PauseDynamicObstacles();
         }
-        
+
+        public void PauseDynamicObstacles()
+        {
+            if (chunkSpawner != null)
+            {
+                var activeChunks = chunkSpawner.GetActiveChunks();
+                foreach (var chunk in activeChunks)
+                {
+                    if (chunk != null && chunk.IsActive)
+                    {
+                        WorldObstacle[] obstacles = chunk.GetComponentsInChildren<WorldObstacle>(true);
+                        foreach (var obstacle in obstacles)
+                        {
+                            if (obstacle != null)
+                            {
+                                obstacle.Pause();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void ResumeWorld()
         {
             if (worldMover != null)
             {
                 worldMover.Resume();
+            }
+        }
+
+        public void ResumeDynamicObstacles()
+        {
+            if (chunkSpawner != null)
+            {
+                var activeChunks = chunkSpawner.GetActiveChunks();
+                foreach (var chunk in activeChunks)
+                {
+                    if (chunk != null && chunk.IsActive)
+                    {
+                        WorldObstacle[] obstacles = chunk.GetComponentsInChildren<WorldObstacle>(true);
+                        foreach (var obstacle in obstacles)
+                        {
+                            if (obstacle != null)
+                            {
+                                obstacle.Resume();
+                            }
+                        }
+                    }
+                }
             }
         }
         
@@ -89,6 +134,7 @@ namespace Managers
             yield return new WaitForSeconds(GameController.Instance.StartTime);
             worldMover?.ResetSpeed();
             worldMover?.Resume();
+            ResumeDynamicObstacles();
         }
 
         public void ResetToLastCheckpoint(float duration)
@@ -103,6 +149,7 @@ namespace Managers
             worldMover?.Pause();
             yield return new WaitForSeconds(GameController.Instance.StartTime);
             worldMover?.Resume();
+            ResumeDynamicObstacles();
         }
         
         public float GetCurrentSpeed()

@@ -26,6 +26,8 @@ namespace World
         private bool _isMoving;
         private bool _isDynamic;
         private bool _isBlocked = false;
+        private bool _wasMovingBeforePause = false;
+        private bool _isPaused = false;
 
         // Formula = _moveSpeed * (activationDistance / (worldSpeed - _moveSpeed))
 
@@ -60,10 +62,10 @@ namespace World
         {
             if (!isActive) return;
 
-            if (_isDynamic)
+            if (_isDynamic && !_isPaused)
             {
                 var player = GameController.Instance != null ? GameController.Instance.PlayerController : null;
-                if (player != null)
+                if (player != null && !_isMoving)
                 {
                     float distanceAhead = transform.position.z - player.transform.position.z;
                     if (distanceAhead <= activationDistance)
@@ -140,6 +142,25 @@ namespace World
         {
             _isMoving = false;
             _isBlocked = false;
+        }
+
+        public void Pause()
+        {
+            if (_isDynamic)
+            {
+                _wasMovingBeforePause = _isMoving;
+                _isPaused = true;
+                _isMoving = false;
+            }
+        }
+
+        public void Resume()
+        {
+            if (_isDynamic)
+            {
+                _isPaused = false;
+                _isMoving = _wasMovingBeforePause;
+            }
         }
 
         public void OnDespawn()

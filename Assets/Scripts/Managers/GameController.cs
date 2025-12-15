@@ -75,6 +75,7 @@ public class GameController : MonoBehaviour
         SaveProgress();
         IsGameOver = true;
         WorldManager.PauseWorld();
+        _uiManager.GameOverPanel.Show();
     }
 
     public void ResetGame()
