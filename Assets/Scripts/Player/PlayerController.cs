@@ -185,13 +185,13 @@ public class PlayerController : MonoBehaviour
 
     private void SetAnimatorType()
     {
-        if(playableObjectName == PlayableObjectName.Bicycle)
+        if(playableObjectName == PlayableObjectName.Skateboard)
         {
-            _animatorMode = AnimatorMode.VelocityBased;
+            _animatorMode = AnimatorMode.PositionBased;
         }
         else
         {
-            _animatorMode = AnimatorMode.PositionBased;
+            _animatorMode = AnimatorMode.VelocityBased;
         }
     }
 
@@ -230,7 +230,7 @@ public class PlayerController : MonoBehaviour
     private void TryJump()
     {
         // Prevent jumping while moving left or right
-        if (Mathf.Abs(transform.position.x - _targetPosition.x) > 0.01f)
+        if (Mathf.Abs(transform.position.x - _targetPosition.x) > 0.01f && _animatorMode == AnimatorMode.PositionBased)
             return;
         
         if (_isGrounded)
