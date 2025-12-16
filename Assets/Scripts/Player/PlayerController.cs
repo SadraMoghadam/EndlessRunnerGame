@@ -10,14 +10,22 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] PlayableObjectName playableObjectName = PlayableObjectName.Skateboard;
 
-    [Header("Movement")]
-    [SerializeField] private float laneChangeSpeed = 10f;
-
     [Header("Jump")]
     [Tooltip("Initial upward velocity applied when jumping. Tune this value to adjust jump height.")]
     [SerializeField] private float jumpVelocity = 6f;
     [Tooltip("Gravity applied to the player (negative value). Tune to change fall speed.")]
     [SerializeField] private float gravity = -20f;
+
+    [Tooltip("Speed at which velocity values smoothly transition (for velocity-based mode)")]
+    [SerializeField] private float velocitySmoothingSpeed = 10f;
+
+    public enum AnimatorMode
+    {
+        PositionBased,
+        VelocityBased
+    }
+    private AnimatorMode _animatorMode = AnimatorMode.PositionBased;
+    private float _laneChangeSpeed = 10f;
 
     private int _playerHealth = 1;
     public int PlayerHealth
@@ -44,6 +52,10 @@ public class PlayerController : MonoBehaviour
     private bool _isGrounded = true;
     private float _groundY;
 
+    // smoothed velocity values for animator
+    private float _smoothedXVelocity = 0f;
+    private float _smoothedYVelocity = 0f;
+
     private void Start()
     {
         _gameManager = GameManager.Instance;
@@ -54,6 +66,9 @@ public class PlayerController : MonoBehaviour
         _playerHealth = _playerData.health;
         _gameController.WorldManager.SetWorldSpeed(_playerData.speed);
         _playerModel = Instantiate(_playerModel, transform);
+
+        SetAnimatorType();
+        SetLaneChangeSpeed();
 
         // initialize lane positions from serialized values
         _lanePositions[0] = _gameController.WorldManager.GetLaneXPosition(LaneNumber.Left);
@@ -80,8 +95,17 @@ public class PlayerController : MonoBehaviour
         HandleInput();
         SmoothMoveToTargetLane();
         ApplyGravityAndJump();
-        Vector2 normalPos = NormalizePosition();
-        SetAnimatorXY(normalPos.x, normalPos.y);
+        
+        if (_animatorMode == AnimatorMode.PositionBased)
+        {
+            Vector2 normalPos = NormalizePosition();
+            SetAnimatorXY(normalPos.x, normalPos.y);
+        }
+        else // VelocityBased
+        {
+            Vector2 velocity = GetVelocityBasedValues();
+            SetAnimatorXY(velocity.x, velocity.y);
+        }
     }
 
     private void HandleInput()
@@ -114,6 +138,68 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private Vector2 GetVelocityBasedValues()
+    {
+        float targetX = 0f;
+        float targetY = 0f;
+
+        // Calculate target X velocity based on horizontal movement direction
+        float xDifference = _targetPosition.x - transform.position.x;
+        if (Mathf.Abs(xDifference) > 0.01f)
+        {
+            // Moving right
+            if (xDifference > 0)
+                targetX = 1f;
+            // Moving left
+            else
+                targetX = -1f;
+        }
+        else
+        {
+            targetX = 0f;
+        }
+
+        // Calculate target Y velocity based on vertical movement
+        if (!_isGrounded)
+        {
+            // Moving up
+            if (_verticalVelocity > 0.01f)
+                targetY = 1f;
+            // Moving down
+            else if (_verticalVelocity < -0.01f)
+                targetY = -1f;
+            else
+                targetY = 0f;
+        }
+        else
+        {
+            targetY = 0f;
+        }
+
+        // Smoothly interpolate to target values
+        _smoothedXVelocity = Mathf.MoveTowards(_smoothedXVelocity, targetX, velocitySmoothingSpeed * Time.deltaTime);
+        _smoothedYVelocity = Mathf.MoveTowards(_smoothedYVelocity, targetY, velocitySmoothingSpeed * Time.deltaTime);
+
+        return new Vector2(_smoothedXVelocity, _smoothedYVelocity);
+    }
+
+    private void SetAnimatorType()
+    {
+        if(playableObjectName == PlayableObjectName.Bicycle)
+        {
+            _animatorMode = AnimatorMode.VelocityBased;
+        }
+        else
+        {
+            _animatorMode = AnimatorMode.PositionBased;
+        }
+    }
+
+    private void SetLaneChangeSpeed()
+    {
+        _laneChangeSpeed = _playerData.laneChangeSpeed;
+    }
+
     private Vector2 NormalizePosition()
     {
         float normalizedx = Mathf.Clamp(transform.position.x / _lanePositions[2], -1f, 1f);
@@ -135,7 +221,7 @@ public class PlayerController : MonoBehaviour
     private void SmoothMoveToTargetLane()
     {
         Vector3 newPos = transform.position;
-        newPos.x = Mathf.MoveTowards(transform.position.x, _targetPosition.x, laneChangeSpeed * Time.deltaTime);
+        newPos.x = Mathf.MoveTowards(transform.position.x, _targetPosition.x, _laneChangeSpeed * Time.deltaTime);
         newPos.y = transform.position.y;
         newPos.z = transform.position.z;
         transform.position = newPos;

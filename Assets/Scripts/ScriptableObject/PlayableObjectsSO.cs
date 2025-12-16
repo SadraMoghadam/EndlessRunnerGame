@@ -16,6 +16,7 @@ namespace Player
     {
         public PlayableObjectName name = PlayableObjectName.Skateboard;
         public GameObject prefab;
+        public float laneChangeSpeed = 10;
         public float speed = 0;
         public int health = 0;
     }
