@@ -25,6 +25,6 @@ MonoBehaviour:
     health: 3
   - name: 2
     prefab: {fileID: 817691091575644543, guid: 8feab831b19068b4783db0783483dc14, type: 3}
-    laneChangeSpeed: 10
+    laneChangeSpeed: 12
     speed: 20
     health: 2
