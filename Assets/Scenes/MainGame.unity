@@ -1178,7 +1178,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5025212966178356482, guid: 649b95866c2d0af4cab90976f6b73378, type: 3}
       propertyPath: playableObjectName
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5060375112786841141, guid: 649b95866c2d0af4cab90976f6b73378, type: 3}
       propertyPath: m_IsActive
@@ -1247,7 +1247,7 @@ PrefabInstance:
       objectReference: {fileID: 444525059}
     - target: {fileID: 417578682562342853, guid: 60de921bfce5b6d4d9d2502c12fa6af1, type: 3}
       propertyPath: m_VersionIndex
-      value: 3982
+      value: 4012
       objectReference: {fileID: 0}
     - target: {fileID: 454006901803311103, guid: 60de921bfce5b6d4d9d2502c12fa6af1, type: 3}
       propertyPath: m_Mesh
@@ -1311,7 +1311,7 @@ PrefabInstance:
       objectReference: {fileID: 1132631430}
     - target: {fileID: 6603310332773795611, guid: 60de921bfce5b6d4d9d2502c12fa6af1, type: 3}
       propertyPath: m_VersionIndex
-      value: 3999
+      value: 4029
       objectReference: {fileID: 0}
     - target: {fileID: 9211397337327938777, guid: 60de921bfce5b6d4d9d2502c12fa6af1, type: 3}
       propertyPath: m_Name

@@ -81,6 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.WorldChunk
   chunkLength: 100
+  LeftLane: {fileID: 0}
+  RightLane: {fileID: 0}
 --- !u!1 &3417025449499572834
 GameObject:
   m_ObjectHideFlags: 0
